@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">ChatApp</string>
+
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="create_account">Sign up</string>
+    <string name="facebook_login">Log in with Facebook</string>
+    <string name="google_login">Log in with google</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="sign_out">Sign out</string>
+
+</resources>
