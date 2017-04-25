@@ -94,7 +94,10 @@ public class EmailPasswordActivity extends AppCompatActivity implements
         if (!validateForm()) {
             return;
         }
-
+        //Only for testing purpose
+        email = "theory93rk@gmail.com";
+        password = "1.2.3.4.5";
+        goToMainActivity();
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
