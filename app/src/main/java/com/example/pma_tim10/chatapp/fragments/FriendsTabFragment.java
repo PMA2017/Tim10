@@ -39,6 +39,14 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
         friendsList.add(new Person("Deda","Ignjat","testing_image.png", 114));
         friendsList.add(new Person("Djed","Djuro","testing_image.png", 78));
         friendsList.add(new Person("Joja","Mali","testing_image.png", 29));
+        friendsList.add(new Person("Djuro","Pucar Stari","testing_image.png", 84));
+        friendsList.add(new Person("Deda","Ignjat","testing_image.png", 114));
+        friendsList.add(new Person("Djed","Djuro","testing_image.png", 78));
+        friendsList.add(new Person("Joja","Mali","testing_image.png", 29));
+        friendsList.add(new Person("Djuro","Pucar Stari","testing_image.png", 84));
+        friendsList.add(new Person("Deda","Ignjat","testing_image.png", 114));
+        friendsList.add(new Person("Djed","Djuro","testing_image.png", 78));
+        friendsList.add(new Person("Joja","Mali","testing_image.png", 29));
 
         FriendsArrayAdapter friendsArrayAdapter = new FriendsArrayAdapter(getActivity(),android.R.id.list, friendsList);
 
