@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.example.pma_tim10.chatapp.R;
 
-public class MessagesTab extends Fragment{
+public class MessagesTabFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

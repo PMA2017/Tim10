@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.example.pma_tim10.chatapp.R;
 
-public class PeopleTab extends Fragment{
+public class PeopleTabFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

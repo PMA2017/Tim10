@@ -12,18 +12,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-
-import android.widget.TextView;
 
 import com.example.pma_tim10.chatapp.R;
-import com.example.pma_tim10.chatapp.fragments.FriendsTab;
-import com.example.pma_tim10.chatapp.fragments.MessagesTab;
-import com.example.pma_tim10.chatapp.fragments.PeopleTab;
+import com.example.pma_tim10.chatapp.fragments.FriendsTabFragment;
+import com.example.pma_tim10.chatapp.fragments.MessagesTabFragment;
+import com.example.pma_tim10.chatapp.fragments.PeopleTabFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
@@ -130,13 +126,13 @@ public class MainActivity extends AppCompatActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 case 0:
-                    PeopleTab peopleTab = new PeopleTab();
+                    PeopleTabFragment peopleTab = new PeopleTabFragment();
                     return  peopleTab;
                 case 1:
-                    FriendsTab friendsTab = new FriendsTab();
+                    FriendsTabFragment friendsTab = new FriendsTabFragment();
                     return friendsTab;
                 case 2:
-                    MessagesTab messagesTab = new MessagesTab();
+                    MessagesTabFragment messagesTab = new MessagesTabFragment();
                     return messagesTab;
                 default:
                     return null;
