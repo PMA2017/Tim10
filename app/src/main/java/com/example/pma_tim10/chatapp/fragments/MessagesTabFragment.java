@@ -3,25 +3,22 @@ package com.example.pma_tim10.chatapp.fragments;
 /**
  * Created by Dorian on 4/25/2017.
  */
+
 import android.content.Intent;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.activities.ConversationActivity;
-import com.example.pma_tim10.chatapp.activities.EmailPasswordActivity;
-import com.example.pma_tim10.chatapp.activities.MainActivity;
-import com.example.pma_tim10.chatapp.adapters.FriendsArrayAdapter;
 import com.example.pma_tim10.chatapp.adapters.MessagesArrayAdapter;
+import com.example.pma_tim10.chatapp.dao_layer.UserDAO;
 import com.example.pma_tim10.chatapp.model.Person;
+import com.example.pma_tim10.chatapp.model.User;
 
 import java.util.ArrayList;
 
@@ -60,7 +57,6 @@ public class MessagesTabFragment extends ListFragment implements AdapterView.OnI
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        //Toast.makeText(getActivity(), "Not yet implemented!", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(getActivity(),ConversationActivity.class);
         getActivity().startActivity(intent);
         getActivity().finish();

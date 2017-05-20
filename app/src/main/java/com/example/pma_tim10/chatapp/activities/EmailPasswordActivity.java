@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.R;
+import com.example.pma_tim10.chatapp.dao_layer.UserDAO;
+import com.example.pma_tim10.chatapp.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -61,7 +63,7 @@ public class EmailPasswordActivity extends AppCompatActivity implements
     }
     // [END on_start_check_user]
 
-    private void createAccount(String email, String password) {
+    private void createAccount(final String email, final String password) {
         Log.d(TAG, "createAccount:" + email);
         if (!validateForm()) {
             return;
@@ -74,6 +76,9 @@ public class EmailPasswordActivity extends AppCompatActivity implements
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
+                            UserDAO userDAO = new UserDAO();
+                            User userToSave = new User(email,password,"","","","");
+                            userDAO.writeToDatabase(userToSave);
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             goToMainActivity();
@@ -95,9 +100,9 @@ public class EmailPasswordActivity extends AppCompatActivity implements
             return;
         }
         //Only for testing purpose
-        //email = "theory93rk@gmail.com";
-        //password = "1.2.3.4.5";
-        goToMainActivity();
+        email = "theory93rk@gmail.com";
+        password = "1.2.3.4.5";
+        //goToMainActivity();
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
