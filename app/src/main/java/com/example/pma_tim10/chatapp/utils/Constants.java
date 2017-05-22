@@ -7,6 +7,7 @@ package com.example.pma_tim10.chatapp.utils;
 public class Constants {
 
     public static final String USER_TABLE = "users";
+    public static final String FRIENDS_TABLE = "friends";
     public static final String CHAT_TABLE = "chats";
     public static final String MESSAGE_TABLE = "messages";
 

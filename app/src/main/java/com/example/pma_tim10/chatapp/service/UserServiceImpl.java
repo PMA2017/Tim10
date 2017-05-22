@@ -65,13 +65,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getMyFriends() {
 
-        ArrayList<User> friendsList = new ArrayList<>();
-        friendsList.add(new User("Djuro","Pucar Stari","a", "a", "testing_image.png", null));
-        friendsList.add(new User("x","Pucar Stari","a", "a", "testing_image.png", null));
-        friendsList.add(new User("gb","Pucar Stari","a", "a", "testing_image.png", null));
-        friendsList.add(new User("bfd","Pucar Stari","a", "a", "testing_image.png", null));
-        friendsList.add(new User("dfs","Pucar Stari","a", "a", "testing_image.png", null));
-        return friendsList;
+        final List<User> friends = new ArrayList<>();
+
+        databaseReference.child(Constants.USER_TABLE).child("cizmar").child(Constants.FRIENDS_TABLE).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Map<String, Boolean> objects = (HashMap<String, Boolean>) dataSnapshot.getValue();
+                for(String username: objects.keySet()){
+                    User user = new User();
+                    user.setEmail(username);
+                    friends.add(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        return friends;
     }
 
     @Override
