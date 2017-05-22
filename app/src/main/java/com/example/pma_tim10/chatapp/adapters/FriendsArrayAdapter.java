@@ -52,7 +52,7 @@ public class FriendsArrayAdapter extends ArrayAdapter<User> {
             holder = (ViewHolder) convertView.getTag();
 
         holder.txtMenuDesc.setText(rowItem.getSurname());
-        holder.txtMenuName.setText(rowItem.getEmail());
+        holder.txtMenuName.setText(rowItem.getName());
         holder.txtPrice.setText("Age: " + 1000);
         holder.imageView.setImageResource(R.drawable.testing_image);
 

@@ -52,7 +52,7 @@ public class PeopleArrayAdapter extends ArrayAdapter<User> {
         } else
             holder = (PeopleArrayAdapter.ViewHolder) convertView.getTag();
 
-        holder.txtName.setText(rowItem.getEmail());
+        holder.txtName.setText(rowItem.getName());
         holder.txtSurname.setText(rowItem.getSurname());
         holder.btnAdd.setText("Add");
         holder.imageView.setImageResource(R.drawable.testing_image);

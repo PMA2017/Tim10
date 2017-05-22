@@ -11,4 +11,5 @@ public class Constants {
     public static final String CHAT_TABLE = "chats";
     public static final String MESSAGE_TABLE = "messages";
 
+    public static final String FRIENDSHIPS = "friendships";
 }

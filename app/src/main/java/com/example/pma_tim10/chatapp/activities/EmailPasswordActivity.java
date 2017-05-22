@@ -34,7 +34,6 @@ public class EmailPasswordActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     // [END declare_auth]
 
-    private AuthService authService;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,7 +53,6 @@ public class EmailPasswordActivity extends AppCompatActivity implements
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
-        authService = new AuthServiceImpl();
     }
 
     // [START on_start_check_user]
@@ -67,35 +65,6 @@ public class EmailPasswordActivity extends AppCompatActivity implements
             goToMainActivity();
     }
     // [END on_start_check_user]
-
-    private void createAccount(final String email, final String password) {
-        Log.d(TAG, "createAccount:" + email);
-        if (!validateForm()) {
-            return;
-        }
-
-        // [START create_user_with_email]
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            //register new user to real time db
-                            authService.registerUser(user.getUid(),user.getEmail());
-                            goToMainActivity();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(EmailPasswordActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                });
-        // [END create_user_with_email]
-    }
 
     private void signIn(String email, String password) {
         Log.d(TAG, "signIn:" + email);

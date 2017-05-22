@@ -46,9 +46,11 @@ public class UserServiceImpl implements UserService {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds: dataSnapshot.getChildren()) {
                     User user = ds.getValue(User.class);
-                    //izbaciti ulogovanog usera
-                        if(user.getEmail().equals(currentUser.getEmail()))
-                            continue;
+                    // exclude current user
+                    if(user.getEmail().equals(currentUser.getEmail()))
+                        continue;
+                    // TO-DO : find and exclude friends
+
                     allUsers.add(user);
                 }
             }
@@ -67,22 +69,22 @@ public class UserServiceImpl implements UserService {
 
         final List<User> friends = new ArrayList<>();
 
-        databaseReference.child(Constants.USER_TABLE).child("cizmar").child(Constants.FRIENDS_TABLE).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Map<String, Boolean> objects = (HashMap<String, Boolean>) dataSnapshot.getValue();
-                for(String username: objects.keySet()){
-                    User user = new User();
-                    user.setEmail(username);
-                    friends.add(user);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+//        databaseReference.child(Constants.USER_TABLE).child("cizmar").child(Constants.FRIENDS_TABLE).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Map<String, Boolean> objects = (HashMap<String, Boolean>) dataSnapshot.getValue();
+//                for(String username: objects.keySet()){
+//                    User user = new User();
+//                    user.setDisplayName(username);
+//                    friends.add(user);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
         return friends;
     }
 

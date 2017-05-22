@@ -5,19 +5,16 @@ package com.example.pma_tim10.chatapp.model;
  */
 public class User {
     private String email;
-    private String password;
     private String name;
     private String surname;
     private String photoURL;
     private String aboutMe;
 
     public User() {
-
     }
 
-    public User(String username, String password, String name, String surname, String photoURL, String aboutMe) {
-        this.email = username;
-        this.password = password;
+    public User(String email, String name, String surname, String photoURL, String aboutMe) {
+        this.email = email;
         this.name = name;
         this.surname = surname;
         this.photoURL = photoURL;
@@ -28,16 +25,8 @@ public class User {
         return email;
     }
 
-    public void setEmail(String username) {
-        this.email = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {

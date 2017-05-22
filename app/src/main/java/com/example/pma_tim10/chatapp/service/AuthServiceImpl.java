@@ -18,13 +18,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean registerUser(String id, String email) {
-        //promeniti da ne bude kljuc id nego nesto drugo
-        User user = new User();
-        user.setName(email.split("@")[0]);
-
+    public boolean registerUser(String uid, User user) {
         try{
-            databaseReference.child(Constants.USER_TABLE).child(id).setValue(user);
+            databaseReference.child(Constants.USER_TABLE).child(uid).setValue(user);
             return true;
         }catch (Exception e)
         {
