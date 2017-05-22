@@ -152,7 +152,8 @@ public class EmailPasswordActivity extends AppCompatActivity implements
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.btn_sign_up) {
-            createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
+            //createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
+            goToSignUpActivity();
         } else if (i == R.id.btn_sign_in) {
             signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
         } else if (i == R.id.btn_fb_log_in) {
@@ -165,6 +166,13 @@ public class EmailPasswordActivity extends AppCompatActivity implements
     private void goToMainActivity(){
         Log.d(TAG,"Going to main activity");
         Intent intent = new Intent(this,MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void goToSignUpActivity(){
+        Log.d(TAG,"Going to sign up activity");
+        Intent intent = new Intent(this,SignUpActivity.class);
         startActivity(intent);
         finish();
     }
