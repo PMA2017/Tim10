@@ -15,11 +15,15 @@ import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.adapters.FriendsArrayAdapter;
-import com.example.pma_tim10.chatapp.model.Person;
-
-import java.util.ArrayList;
+import com.example.pma_tim10.chatapp.service.UserService;
+import com.example.pma_tim10.chatapp.service.UserServiceImpl;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class FriendsTabFragment extends ListFragment implements AdapterView.OnItemClickListener {
+
+    private UserService friendsService;
+    private FirebaseUser currentUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,22 +36,10 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //Hardcoded values, only for testing purpose
-        ArrayList<Person> friendsList = new ArrayList<>();
-        friendsList.add(new Person("Djuro","Pucar Stari","testing_image.png", 84));
-        friendsList.add(new Person("Deda","Ignjat","testing_image.png", 114));
-        friendsList.add(new Person("Djed","Djuro","testing_image.png", 78));
-        friendsList.add(new Person("Joja","Mali","testing_image.png", 29));
-        friendsList.add(new Person("Djuro","Pucar Stari","testing_image.png", 84));
-        friendsList.add(new Person("Deda","Ignjat","testing_image.png", 114));
-        friendsList.add(new Person("Djed","Djuro","testing_image.png", 78));
-        friendsList.add(new Person("Joja","Mali","testing_image.png", 29));
-        friendsList.add(new Person("Djuro","Pucar Stari","testing_image.png", 84));
-        friendsList.add(new Person("Deda","Ignjat","testing_image.png", 114));
-        friendsList.add(new Person("Djed","Djuro","testing_image.png", 78));
-        friendsList.add(new Person("Joja","Mali","testing_image.png", 29));
+        friendsService = new UserServiceImpl();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        FriendsArrayAdapter friendsArrayAdapter = new FriendsArrayAdapter(getActivity(),android.R.id.list, friendsList);
+        FriendsArrayAdapter friendsArrayAdapter = new FriendsArrayAdapter(getActivity(),android.R.id.list, friendsService.getMyFriends());
 
         setListAdapter(friendsArrayAdapter);
         getListView().setOnItemClickListener(this);

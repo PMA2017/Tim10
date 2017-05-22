@@ -14,6 +14,8 @@ import android.widget.Toast;
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.dao_layer.UserDAO;
 import com.example.pma_tim10.chatapp.model.User;
+import com.example.pma_tim10.chatapp.service.AuthService;
+import com.example.pma_tim10.chatapp.service.AuthServiceImpl;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -31,6 +33,8 @@ public class EmailPasswordActivity extends AppCompatActivity implements
     // [START declare_auth]
     private FirebaseAuth mAuth;
     // [END declare_auth]
+
+    private AuthService authService;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,7 @@ public class EmailPasswordActivity extends AppCompatActivity implements
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
+        authService = new AuthServiceImpl();
     }
 
     // [START on_start_check_user]
@@ -75,12 +80,10 @@ public class EmailPasswordActivity extends AppCompatActivity implements
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            UserDAO userDAO = new UserDAO();
-                            User userToSave = new User(email,password,"","","","");
-                            userDAO.writeToDatabase(userToSave);
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            //register new user to real time db
+                            authService.registerUser(user.getUid(),user.getEmail());
                             goToMainActivity();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -99,10 +102,6 @@ public class EmailPasswordActivity extends AppCompatActivity implements
         if (!validateForm()) {
             return;
         }
-        //Only for testing purpose
-        email = "theory93rk@gmail.com";
-        password = "1.2.3.4.5";
-        //goToMainActivity();
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {

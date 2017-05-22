@@ -13,11 +13,15 @@ import android.view.ViewGroup;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.adapters.PeopleArrayAdapter;
-import com.example.pma_tim10.chatapp.model.Person;
+import com.example.pma_tim10.chatapp.service.UserService;
+import com.example.pma_tim10.chatapp.service.UserServiceImpl;
 
 import java.util.ArrayList;
 
 public class PeopleTabFragment extends ListFragment {
+
+    private UserService userService;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -29,21 +33,9 @@ public class PeopleTabFragment extends ListFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ArrayList<Person> peopleList = new ArrayList<>();
-        peopleList.add(new Person("Djuro","Pucar Stari","testing_image.png", 84));
-        peopleList.add(new Person("Deda","Ignjat","testing_image.png", 114));
-        peopleList.add(new Person("Djed","Djuro","testing_image.png", 78));
-        peopleList.add(new Person("Joja","Mali","testing_image.png", 29));
-        peopleList.add(new Person("Djuro","Pucar Stari","testing_image.png", 84));
-        peopleList.add(new Person("Deda","Ignjat","testing_image.png", 114));
-        peopleList.add(new Person("Djed","Djuro","testing_image.png", 78));
-        peopleList.add(new Person("Joja","Mali","testing_image.png", 29));
-        peopleList.add(new Person("Djuro","Pucar Stari","testing_image.png", 84));
-        peopleList.add(new Person("Deda","Ignjat","testing_image.png", 114));
-        peopleList.add(new Person("Djed","Djuro","testing_image.png", 78));
-        peopleList.add(new Person("Joja","Mali","testing_image.png", 29));
+        userService = new UserServiceImpl();
 
-        PeopleArrayAdapter peopleArrayAdapter = new PeopleArrayAdapter(getActivity(),android.R.id.list, peopleList);
+        PeopleArrayAdapter peopleArrayAdapter = new PeopleArrayAdapter(getActivity(),android.R.id.list, userService.getAllUsers());
 
         setListAdapter(peopleArrayAdapter);
 

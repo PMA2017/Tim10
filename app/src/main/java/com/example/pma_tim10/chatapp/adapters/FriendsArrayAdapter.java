@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pma_tim10.chatapp.R;
-import com.example.pma_tim10.chatapp.model.Person;
+import com.example.pma_tim10.chatapp.model.User;
 
 import java.util.List;
 
@@ -18,11 +18,11 @@ import java.util.List;
  * Created by Dorian on 4/25/2017.
  */
 
-public class FriendsArrayAdapter extends ArrayAdapter<Person> {
+public class FriendsArrayAdapter extends ArrayAdapter<User> {
 
     Context context;
 
-    public FriendsArrayAdapter(Context context, int textViewResourceId, List<Person> objects) {
+    public FriendsArrayAdapter(Context context, int textViewResourceId, List<User> objects) {
         super(context,textViewResourceId,objects);
         this.context = context;
     }
@@ -36,7 +36,7 @@ public class FriendsArrayAdapter extends ArrayAdapter<Person> {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
-        Person rowItem = getItem(position);
+        User rowItem = getItem(position);
 
         LayoutInflater mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -53,7 +53,7 @@ public class FriendsArrayAdapter extends ArrayAdapter<Person> {
 
         holder.txtMenuDesc.setText(rowItem.getSurname());
         holder.txtMenuName.setText(rowItem.getName());
-        holder.txtPrice.setText("Age: " + rowItem.getAge());
+        holder.txtPrice.setText("Age: " + 1000);
         holder.imageView.setImageResource(R.drawable.testing_image);
 
 

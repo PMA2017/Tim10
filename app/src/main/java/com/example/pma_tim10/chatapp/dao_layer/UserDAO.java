@@ -19,9 +19,9 @@ public class UserDAO {
     }
 
     public void writeToDatabase(User user){
-        String username = new String(user.getUsername());
-        user.setUsername("");
-        databaseReference.child(Constants.USER_TABLE).child(username).setValue(user);
+//        String username = new String(user.getUsername());
+//        user.setUsername("");
+//        databaseReference.child(Constants.USER_TABLE).child(username).setValue(user);
     }
 
 }

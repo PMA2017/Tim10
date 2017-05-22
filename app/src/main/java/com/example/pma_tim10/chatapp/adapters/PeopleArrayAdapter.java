@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pma_tim10.chatapp.R;
-import com.example.pma_tim10.chatapp.model.Person;
+import com.example.pma_tim10.chatapp.model.User;
 
 import java.util.List;
 
@@ -19,11 +19,11 @@ import java.util.List;
  * Created by Dorian on 5/16/2017.
  */
 
-public class PeopleArrayAdapter extends ArrayAdapter<Person> {
+public class PeopleArrayAdapter extends ArrayAdapter<User> {
 
     Context context;
 
-    public PeopleArrayAdapter(Context context, int textViewResourceId, List<Person> objects){
+    public PeopleArrayAdapter(Context context, int textViewResourceId, List<User> objects){
         super(context,textViewResourceId,objects);
         this.context = context;
     }
@@ -37,7 +37,7 @@ public class PeopleArrayAdapter extends ArrayAdapter<Person> {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         PeopleArrayAdapter.ViewHolder holder = null;
-        Person rowItem = getItem(position);
+        User rowItem = getItem(position);
 
         LayoutInflater mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -52,7 +52,7 @@ public class PeopleArrayAdapter extends ArrayAdapter<Person> {
         } else
             holder = (PeopleArrayAdapter.ViewHolder) convertView.getTag();
 
-        holder.txtName.setText(rowItem.getName());
+        holder.txtName.setText(rowItem.getEmail());
         holder.txtSurname.setText(rowItem.getSurname());
         holder.btnAdd.setText("Add");
         holder.imageView.setImageResource(R.drawable.testing_image);
