@@ -4,9 +4,11 @@ package com.example.pma_tim10.chatapp.fragments;
  * Created by Dorian on 4/25/2017.
  */
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,16 +16,27 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.R;
+import com.example.pma_tim10.chatapp.activities.UserDetailsActivity;
 import com.example.pma_tim10.chatapp.adapters.FriendsArrayAdapter;
+import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.service.UserService;
 import com.example.pma_tim10.chatapp.service.UserServiceImpl;
+import com.example.pma_tim10.chatapp.utils.Constants;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FriendsTabFragment extends ListFragment implements AdapterView.OnItemClickListener {
-
-    private UserService friendsService;
-    private FirebaseUser currentUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,17 +49,72 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        friendsService = new UserServiceImpl();
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        populateFriends();
+    }
 
-        FriendsArrayAdapter friendsArrayAdapter = new FriendsArrayAdapter(getActivity(),android.R.id.list, friendsService.getMyFriends());
 
-        setListAdapter(friendsArrayAdapter);
-        getListView().setOnItemClickListener(this);
+    private void updateUI(List<User> users){
+        if(getActivity() != null) {
+            FriendsArrayAdapter friendsArrayAdapter = new FriendsArrayAdapter(getActivity(), android.R.id.list, users);
+            setListAdapter(friendsArrayAdapter);
+            getListView().setOnItemClickListener(this);
+        }
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        Toast.makeText(getActivity(), "Not yet implemented!", Toast.LENGTH_SHORT).show();
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        User user = (User) parent.getItemAtPosition(position);
+        goToUserDetailsActivity(user.getUid());
     }
+
+    private void goToUserDetailsActivity(String uid){
+        Intent intent = new Intent(getActivity(),UserDetailsActivity.class);
+        intent.putExtra(Constants.IE_USER_ID_KEY, uid);
+        startActivity(intent);
+        getActivity().finish();
+    }
+
+
+    // GET DATA FROM FIREBASE -- MUST BE IN ACTIVITY/FRAGMENT CLASSES -- UPDATE UI
+    private void populateFriends() {
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        // get uids of current user friends
+        databaseReference.child(Constants.FRIENDSHIPS)
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Map<String, Boolean> objects = (HashMap<String, Boolean>) dataSnapshot.getValue();
+                if (objects == null)
+                    return;
+
+                final List<User> friends = new ArrayList<>();
+                // get details for friends
+                for(String friendId : objects.keySet()){
+                    databaseReference.child(Constants.USER_TABLE).child(friendId).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User user = dataSnapshot.getValue(User.class);
+                            friends.add(user);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+                //update UI
+                updateUI(friends);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 }

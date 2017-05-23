@@ -10,10 +10,7 @@ import java.util.List;
 
 public interface UserService {
 
-    List<User> getAllUsers();
-    List<User> getMyFriends();
-    List<User> filterUsers();
-
     void addFriend(String friendsUid);
     void removeFriend(String friendsUid);
+
 }

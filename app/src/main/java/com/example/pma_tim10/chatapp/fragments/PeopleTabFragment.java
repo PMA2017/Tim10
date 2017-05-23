@@ -22,12 +22,16 @@ import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.service.UserService;
 import com.example.pma_tim10.chatapp.service.UserServiceImpl;
 import com.example.pma_tim10.chatapp.utils.Constants;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PeopleTabFragment extends ListFragment implements AdapterView.OnItemClickListener {
-
-    private UserService userService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,13 +44,15 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        userService = new UserServiceImpl();
+        populatePeople();
+    }
 
-        PeopleArrayAdapter peopleArrayAdapter = new PeopleArrayAdapter(getActivity(),android.R.id.list, userService.getAllUsers());
-
-        setListAdapter(peopleArrayAdapter);
-        getListView().setOnItemClickListener(this);
-
+    private void updateUI(List<User> users){
+        if(getActivity() != null) {
+            PeopleArrayAdapter peopleArrayAdapter = new PeopleArrayAdapter(getActivity(), android.R.id.list, users);
+            setListAdapter(peopleArrayAdapter);
+            getListView().setOnItemClickListener(this);
+        }
     }
 
     @Override
@@ -60,6 +66,34 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
         intent.putExtra(Constants.IE_USER_ID_KEY, uid);
         startActivity(intent);
         getActivity().finish();
+    }
+
+    // GET DATA FROM FIREBASE -- MUST BE IN ACTIVITY/FRAGMENT CLASSES -- UPDATE UI
+    private void populatePeople(){
+        FirebaseDatabase.getInstance().getReference().child(Constants.USER_TABLE).addValueEventListener(new ValueEventListener(){
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<User> users = new ArrayList<>();
+
+                for (DataSnapshot ds: dataSnapshot.getChildren()) {
+                    User user = ds.getValue(User.class);
+                    // exclude current user
+                    if(user.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+                        continue;
+                    // TO-DO : find and exclude friends
+                    users.add(user);
+                }
+
+                //update ui
+                updateUI(users);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
 }
