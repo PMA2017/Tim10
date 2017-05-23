@@ -69,22 +69,35 @@ public class UserServiceImpl implements UserService {
 
         final List<User> friends = new ArrayList<>();
 
-//        databaseReference.child(Constants.USER_TABLE).child("cizmar").child(Constants.FRIENDS_TABLE).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Map<String, Boolean> objects = (HashMap<String, Boolean>) dataSnapshot.getValue();
-//                for(String username: objects.keySet()){
-//                    User user = new User();
-//                    user.setDisplayName(username);
-//                    friends.add(user);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
+        databaseReference.child(Constants.FRIENDSHIPS).child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Map<String, Boolean> objects = (HashMap<String, Boolean>) dataSnapshot.getValue();
+                if (objects == null)
+                    return;
+
+                for(String friendId : objects.keySet()){
+                    databaseReference.child(Constants.USER_TABLE).child(friendId).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User user = dataSnapshot.getValue(User.class);
+                            friends.add(user);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         return friends;
     }
 

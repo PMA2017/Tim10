@@ -160,4 +160,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         finish();
     }
 
+    @Override
+    public void onBackPressed() {
+        goToEmailPasswordActivity();
+    }
 }

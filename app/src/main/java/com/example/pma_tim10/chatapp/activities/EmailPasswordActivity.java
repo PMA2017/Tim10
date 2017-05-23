@@ -145,4 +145,9 @@ public class EmailPasswordActivity extends AppCompatActivity implements
         startActivity(intent);
         finish();
     }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }
