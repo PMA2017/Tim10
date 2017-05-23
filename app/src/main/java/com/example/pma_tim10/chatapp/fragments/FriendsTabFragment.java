@@ -38,6 +38,10 @@ import java.util.Map;
 
 public class FriendsTabFragment extends ListFragment implements AdapterView.OnItemClickListener {
 
+    private List<User> friends;
+    private FriendsArrayAdapter friendsArrayAdapter;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,16 +53,17 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        friends = new ArrayList<>();
+        friendsArrayAdapter = new FriendsArrayAdapter(getActivity(), android.R.id.list, friends);
+        setListAdapter(friendsArrayAdapter);
+        getListView().setOnItemClickListener(this);
+
         populateFriends();
     }
 
 
-    private void updateUI(List<User> users){
-        if(getActivity() != null) {
-            FriendsArrayAdapter friendsArrayAdapter = new FriendsArrayAdapter(getActivity(), android.R.id.list, users);
-            setListAdapter(friendsArrayAdapter);
-            getListView().setOnItemClickListener(this);
-        }
+    private void updateUI(){
+        friendsArrayAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -84,18 +89,29 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
                         .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                // clear adapter list if friendships are changed
+                friends.clear();
+
                 Map<String, Boolean> objects = (HashMap<String, Boolean>) dataSnapshot.getValue();
                 if (objects == null)
                     return;
 
-                final List<User> friends = new ArrayList<>();
                 // get details for friends
-                for(String friendId : objects.keySet()){
-                    databaseReference.child(Constants.USER_TABLE).child(friendId).addValueEventListener(new ValueEventListener() {
+                // or update friend if changed
+                for(final String friendId : objects.keySet()){
+                    databaseReference.child(Constants.USERS).child(friendId).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             User user = dataSnapshot.getValue(User.class);
-                            friends.add(user);
+                            // friend updated
+                            if(friends.contains(user)){
+                                int idx = friends.indexOf(user);
+                                friends.remove(idx);
+                                friends.add(idx,user);
+                            }else{
+                                friends.add(user);
+                            }
+                            updateUI();
                         }
 
                         @Override
@@ -106,7 +122,7 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
                 }
 
                 //update UI
-                updateUI(friends);
+                updateUI();
 
             }
 

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.activities.MainActivity;
 import com.example.pma_tim10.chatapp.activities.UserDetailsActivity;
+import com.example.pma_tim10.chatapp.adapters.FriendsArrayAdapter;
 import com.example.pma_tim10.chatapp.adapters.PeopleArrayAdapter;
 import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.service.UserService;
@@ -33,6 +34,9 @@ import java.util.List;
 
 public class PeopleTabFragment extends ListFragment implements AdapterView.OnItemClickListener {
 
+    private List<User> people;
+    private PeopleArrayAdapter peopleArrayAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -44,15 +48,16 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        people = new ArrayList<>();
+        peopleArrayAdapter = new PeopleArrayAdapter(getActivity(), android.R.id.list, people);
+        setListAdapter(peopleArrayAdapter);
+        getListView().setOnItemClickListener(this);
+
         populatePeople();
     }
 
-    private void updateUI(List<User> users){
-        if(getActivity() != null) {
-            PeopleArrayAdapter peopleArrayAdapter = new PeopleArrayAdapter(getActivity(), android.R.id.list, users);
-            setListAdapter(peopleArrayAdapter);
-            getListView().setOnItemClickListener(this);
-        }
+    private void updateUI(){
+        peopleArrayAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -70,11 +75,11 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
 
     // GET DATA FROM FIREBASE -- MUST BE IN ACTIVITY/FRAGMENT CLASSES -- UPDATE UI
     private void populatePeople(){
-        FirebaseDatabase.getInstance().getReference().child(Constants.USER_TABLE).addValueEventListener(new ValueEventListener(){
+        FirebaseDatabase.getInstance().getReference().child(Constants.USERS).addValueEventListener(new ValueEventListener(){
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<User> users = new ArrayList<>();
+                people.clear();
 
                 for (DataSnapshot ds: dataSnapshot.getChildren()) {
                     User user = ds.getValue(User.class);
@@ -82,11 +87,11 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
                     if(user.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
                         continue;
                     // TO-DO : find and exclude friends
-                    users.add(user);
+                    people.add(user);
                 }
 
                 //update ui
-                updateUI(users);
+                updateUI();
             }
 
             @Override

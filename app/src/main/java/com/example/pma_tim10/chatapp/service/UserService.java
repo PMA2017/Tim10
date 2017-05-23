@@ -13,4 +13,7 @@ public interface UserService {
     void addFriend(String friendsUid);
     void removeFriend(String friendsUid);
 
+    void setOnline();
+    void setOffline();
+
 }

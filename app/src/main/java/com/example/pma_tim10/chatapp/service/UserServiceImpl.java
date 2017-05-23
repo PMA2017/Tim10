@@ -61,4 +61,15 @@ public class UserServiceImpl implements UserService {
         // remove logged in user from friend
         databaseReference.child(Constants.FRIENDSHIPS).child(friendsUid).child(currentUser.getUid()).removeValue();
     }
+
+    @Override
+    public void setOnline() {
+        databaseReference.child(Constants.USERS).child(currentUser.getUid()).child(Constants.USER_ONLINE_FIELD).setValue(true);
+    }
+
+    @Override
+    public void setOffline() {
+        databaseReference.child(Constants.USERS).child(currentUser.getUid()).child(Constants.USER_ONLINE_FIELD).setValue(false);
+    }
+
 }

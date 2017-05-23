@@ -40,6 +40,7 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
     private UserService userService;
 
     private ImageButton ibtnAddFriend;
+    private ImageButton ibtnOpenChat;
     private ImageView ivUserPhoto;
     private TextView tvUserFullName;
     private TextView tvUserEmail;
@@ -61,23 +62,25 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
 
         userId = getIntent().getStringExtra(Constants.IE_USER_ID_KEY);
 
-        this.databaseReference = FirebaseDatabase.getInstance().getReference();
-        this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         ivUserPhoto = (ImageView) findViewById(R.id.user_profile_photo);
         tvUserFullName = (TextView) findViewById(R.id.user_profile_name);
         tvUserEmail = (TextView) findViewById(R.id.user_email);
         tvUserAboutMe = (TextView) findViewById(R.id.user_about_me);
         ibtnAddFriend = (ImageButton) findViewById(R.id.add_friend);
+        ibtnOpenChat = (ImageButton) findViewById(R.id.open_chat);
 
         ibtnAddFriend.setOnClickListener(this);
+        ibtnOpenChat.setOnClickListener(this);
 
         setButtonTag(userId);
         getUsersDetails(userId);
     }
 
     private void getUsersDetails(String userId){
-        databaseReference.child(Constants.USER_TABLE).child(userId).addValueEventListener(new ValueEventListener(){
+        databaseReference.child(Constants.USERS).child(userId).addValueEventListener(new ValueEventListener(){
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -141,6 +144,7 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onClick(View view) {
         int i = view.getId();
+        //btn add / remove friend
         if (i == R.id.add_friend) {
             String tag = (String) view.getTag();
             switch (tag) {
@@ -154,6 +158,15 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
                     break;
             }
         }
+        //btn open chat
+        if (i == R.id.open_chat){
+            goToChatActivity();
+        }
+
+    }
+
+    private void goToChatActivity() {
+        Log.d(TAG,"Going to chat activity");
     }
 
     private void addFriend() {

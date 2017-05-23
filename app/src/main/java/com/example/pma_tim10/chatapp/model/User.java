@@ -1,5 +1,7 @@
 package com.example.pma_tim10.chatapp.model;
 
+import java.util.Objects;
+
 /**
  * Created by Dorian on 5/20/2017.
  */
@@ -10,17 +12,19 @@ public class User {
     private String surname;
     private String photoURL;
     private String aboutMe;
+    private Boolean online;
 
     public User() {
     }
 
-    public User(String uid, String email, String name, String surname, String photoURL, String aboutMe) {
+    public User(String uid, String email, String name, String surname, String photoURL, String aboutMe, Boolean online) {
         this.uid = uid;
         this.email = email;
         this.name = name;
         this.surname = surname;
         this.photoURL = photoURL;
         this.aboutMe = aboutMe;
+        this.online = online;
     }
 
     public String getUid() {
@@ -69,5 +73,22 @@ public class User {
 
     public void setAboutMe(String aboutMe) {
         this.aboutMe = aboutMe;
+    }
+
+    public Boolean isOnline() {
+        return online == null ? false : online;
+    }
+
+    public void setOnline(Boolean online) {
+        this.online = online;
+    }
+
+    public String getStatus(){
+        return isOnline() == true ? "online" : "offline";
+    }
+
+    @Override
+    public boolean equals(Object user) {
+        return this.getUid() == ((User)user).getUid();
     }
 }

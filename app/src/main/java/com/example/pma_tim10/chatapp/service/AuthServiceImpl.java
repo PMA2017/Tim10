@@ -20,7 +20,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean registerUser(String uid, User user) {
         try{
-            databaseReference.child(Constants.USER_TABLE).child(uid).setValue(user);
+            databaseReference.child(Constants.USERS).child(uid).setValue(user);
             return true;
         }catch (Exception e)
         {

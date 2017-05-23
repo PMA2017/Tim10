@@ -29,18 +29,6 @@
             android:paddingBottom="24dp">
 
 
-            <ImageButton
-                android:id="@+id/add_friend"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginLeft="16dp"
-                android:src="@drawable/ic_add_friend"
-                android:layout_alignTop="@+id/user_profile_name"
-                android:layout_toEndOf="@+id/user_profile_name"
-                android:layout_marginStart="22dp"
-                android:clickable="true"
-                android:background="?android:selectableItemBackground" />
-
             <TextView
                 android:id="@+id/user_profile_name"
                 android:layout_width="wrap_content"
@@ -50,6 +38,31 @@
                 android:textStyle="bold"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true" />
+
+            <ImageButton
+                android:id="@+id/open_chat"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="16dp"
+                android:src="@android:drawable/ic_dialog_email"
+                android:clickable="true"
+                android:background="?android:selectableItemBackground"
+                android:layout_marginEnd="43dp"
+                android:layout_above="@+id/user_profile_name"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="48dp" />
+
+            <ImageButton
+                android:id="@+id/add_friend"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="16dp"
+                android:src="@drawable/ic_add_friend"
+                android:layout_marginStart="53dp"
+                android:clickable="true"
+                android:background="?android:selectableItemBackground"
+                android:layout_alignTop="@+id/open_chat"
+                android:layout_alignParentStart="true" />
 
         </RelativeLayout>
 
