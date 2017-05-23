@@ -108,7 +108,33 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void addFriend() {
+    public void addFriend(String friendsUid) {
+        // friendships:
+        //logged_in_id:
+        // friendsUid : true
+        //friendsUid:
+        // logged_in_id : true
 
+        // add friend to logged in user
+        databaseReference.child(Constants.FRIENDSHIPS).child(currentUser.getUid()).child(friendsUid).setValue(true);
+
+        // add logged in user to friend
+        databaseReference.child(Constants.FRIENDSHIPS).child(friendsUid).child(currentUser.getUid()).setValue(true);
+
+    }
+
+    @Override
+    public void removeFriend(String friendsUid) {
+        // friendships:
+        //logged_in_id:
+        // friendsUid : true
+        //friendsUid:
+        // logged_in_id : true
+
+        // remove friend from logged in user
+        databaseReference.child(Constants.FRIENDSHIPS).child(currentUser.getUid()).child(friendsUid).removeValue();
+
+        // remove logged in user from friend
+        databaseReference.child(Constants.FRIENDSHIPS).child(friendsUid).child(currentUser.getUid()).removeValue();
     }
 }

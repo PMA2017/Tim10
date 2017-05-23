@@ -132,6 +132,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             //register new user to real time db
+                            newUser.setUid(user.getUid());
                             authService.registerUser(user.getUid(), newUser);
                             goToMainActivity();
                         } else {

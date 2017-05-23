@@ -13,7 +13,7 @@ import com.example.pma_tim10.chatapp.R;
 
 public class ConversationActivity extends AppCompatActivity {
 
-    private static final String TAG = SignUpActivity.class.getSimpleName();
+    private static final String TAG = ConversationActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

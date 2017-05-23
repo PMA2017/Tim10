@@ -32,7 +32,6 @@ public class PeopleArrayAdapter extends ArrayAdapter<User> {
         ImageView imageView;
         TextView txtName;
         TextView txtSurname;
-        Button btnAdd;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -46,7 +45,6 @@ public class PeopleArrayAdapter extends ArrayAdapter<User> {
             holder = new PeopleArrayAdapter.ViewHolder();
             holder.txtName = (TextView) convertView.findViewById(R.id.person_name);
             holder.txtSurname = (TextView) convertView.findViewById(R.id.person_surname);
-            holder.btnAdd = (Button) convertView.findViewById(R.id.button_add);
             holder.imageView = (ImageView) convertView.findViewById(R.id.list_image);
             convertView.setTag(holder);
         } else
@@ -54,7 +52,6 @@ public class PeopleArrayAdapter extends ArrayAdapter<User> {
 
         holder.txtName.setText(rowItem.getName());
         holder.txtSurname.setText(rowItem.getSurname());
-        holder.btnAdd.setText("Add");
         holder.imageView.setImageResource(R.drawable.testing_image);
 
         return convertView;

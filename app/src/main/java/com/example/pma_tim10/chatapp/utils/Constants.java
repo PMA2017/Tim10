@@ -12,4 +12,7 @@ public class Constants {
     public static final String MESSAGE_TABLE = "messages";
 
     public static final String FRIENDSHIPS = "friendships";
+
+    // intent extra keys
+    public static final String IE_USER_ID_KEY = "userid";
 }

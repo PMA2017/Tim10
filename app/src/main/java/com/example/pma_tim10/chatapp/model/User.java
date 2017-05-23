@@ -4,6 +4,7 @@ package com.example.pma_tim10.chatapp.model;
  * Created by Dorian on 5/20/2017.
  */
 public class User {
+    private String uid;
     private String email;
     private String name;
     private String surname;
@@ -13,12 +14,21 @@ public class User {
     public User() {
     }
 
-    public User(String email, String name, String surname, String photoURL, String aboutMe) {
+    public User(String uid, String email, String name, String surname, String photoURL, String aboutMe) {
+        this.uid = uid;
         this.email = email;
         this.name = name;
         this.surname = surname;
         this.photoURL = photoURL;
         this.aboutMe = aboutMe;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getEmail() {

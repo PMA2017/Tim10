@@ -14,7 +14,6 @@ public interface UserService {
     List<User> getMyFriends();
     List<User> filterUsers();
 
-    void addFriend();
-
-
+    void addFriend(String friendsUid);
+    void removeFriend(String friendsUid);
 }

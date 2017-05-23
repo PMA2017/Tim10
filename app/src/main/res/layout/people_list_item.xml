@@ -45,14 +45,4 @@
         android:textSize="10sp"
         tools:ignore="SmallSp" />
 
-    <Button xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/button_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@id/person_name"
-        android:layout_marginRight="5dip"
-        android:text="@string/add"
-        tools:ignore="SmallSp"/>
-
 </RelativeLayout>
