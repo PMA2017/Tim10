@@ -24,6 +24,7 @@ import com.example.pma_tim10.chatapp.service.UserService;
 import com.example.pma_tim10.chatapp.service.UserServiceImpl;
 import com.example.pma_tim10.chatapp.utils.Constants;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -36,6 +37,7 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
 
     private List<User> people;
     private PeopleArrayAdapter peopleArrayAdapter;
+    private FirebaseUser currentUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,6 +49,8 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         people = new ArrayList<>();
         peopleArrayAdapter = new PeopleArrayAdapter(getActivity(), android.R.id.list, people);
@@ -84,7 +88,7 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
                 for (DataSnapshot ds: dataSnapshot.getChildren()) {
                     User user = ds.getValue(User.class);
                     // exclude current user
-                    if(user.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+                    if(currentUser != null & user.getUid().equals(currentUser.getUid()))
                         continue;
                     // TO-DO : find and exclude friends
                     people.add(user);
