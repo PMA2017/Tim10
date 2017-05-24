@@ -12,28 +12,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.R;
-import com.example.pma_tim10.chatapp.activities.MainActivity;
 import com.example.pma_tim10.chatapp.activities.UserDetailsActivity;
-import com.example.pma_tim10.chatapp.adapters.FriendsArrayAdapter;
 import com.example.pma_tim10.chatapp.adapters.PeopleArrayAdapter;
 import com.example.pma_tim10.chatapp.model.User;
+import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
+import com.example.pma_tim10.chatapp.service.IUserService;
 import com.example.pma_tim10.chatapp.service.UserService;
-import com.example.pma_tim10.chatapp.service.UserServiceImpl;
 import com.example.pma_tim10.chatapp.utils.Constants;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PeopleTabFragment extends ListFragment implements AdapterView.OnItemClickListener {
+
+    private IUserService userService;
 
     private List<User> people;
     private PeopleArrayAdapter peopleArrayAdapter;
@@ -50,6 +46,8 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        userService = new UserService();
+
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         people = new ArrayList<>();
@@ -60,7 +58,9 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
         populatePeople();
     }
 
-    private void updateUI(){
+    private void updateUI(List<User> data){
+        people.removeAll(people);
+        people.addAll(data);
         peopleArrayAdapter.notifyDataSetChanged();
     }
 
@@ -77,30 +77,12 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
         getActivity().finish();
     }
 
-    // GET DATA FROM FIREBASE -- MUST BE IN ACTIVITY/FRAGMENT CLASSES -- UPDATE UI
+    // GET DATA FROM FIREBASE
     private void populatePeople(){
-        FirebaseDatabase.getInstance().getReference().child(Constants.USERS).addValueEventListener(new ValueEventListener(){
-
+        userService.getPeople(new IFirebaseCallback() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                people.clear();
-
-                for (DataSnapshot ds: dataSnapshot.getChildren()) {
-                    User user = ds.getValue(User.class);
-                    // exclude current user
-                    if(currentUser != null & user.getUid().equals(currentUser.getUid()))
-                        continue;
-                    // TO-DO : find and exclude friends
-                    people.add(user);
-                }
-
-                //update ui
-                updateUI();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void notifyUI(List data) {
+                updateUI((List<User>)data);
             }
         });
     }

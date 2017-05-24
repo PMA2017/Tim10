@@ -5,15 +5,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.model.User;
+import com.example.pma_tim10.chatapp.service.IUserService;
 import com.example.pma_tim10.chatapp.service.UserService;
-import com.example.pma_tim10.chatapp.service.UserServiceImpl;
 import com.example.pma_tim10.chatapp.utils.Constants;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,8 +21,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by Daniel on 5/23/2017.
@@ -37,7 +34,7 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
     private DatabaseReference databaseReference;
     private FirebaseUser currentUser;
 
-    private UserService userService;
+    private IUserService IUserService;
 
     private ImageButton ibtnAddFriend;
     private ImageButton ibtnOpenChat;
@@ -58,7 +55,7 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_details);
 
-        userService = new UserServiceImpl();
+        IUserService = new UserService();
 
         userId = getIntent().getStringExtra(Constants.IE_USER_ID_KEY);
 
@@ -170,11 +167,11 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void addFriend() {
-        userService.addFriend(userProfile.getUid());
+        IUserService.addFriend(userProfile.getUid());
     }
 
     private void removeFriend() {
-        userService.removeFriend(userProfile.getUid());
+        IUserService.removeFriend(userProfile.getUid());
     }
 
     @Override

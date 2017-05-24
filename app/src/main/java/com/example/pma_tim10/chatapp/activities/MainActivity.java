@@ -19,8 +19,8 @@ import com.example.pma_tim10.chatapp.fragments.FriendsTabFragment;
 import com.example.pma_tim10.chatapp.fragments.MessagesTabFragment;
 import com.example.pma_tim10.chatapp.fragments.PeopleTabFragment;
 import com.example.pma_tim10.chatapp.receivers.NetworkConnectivityReceiver;
+import com.example.pma_tim10.chatapp.service.IUserService;
 import com.example.pma_tim10.chatapp.service.UserService;
-import com.example.pma_tim10.chatapp.service.UserServiceImpl;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mViewPager;
 
     private NetworkConnectivityReceiver networkConnectivityReceiver;
-    private UserService userService;
+    private IUserService IUserService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(networkConnectivityReceiver,intentFilter);
 
         // set this user online
-        userService = new UserServiceImpl();
-        userService.setOnline();
+        IUserService = new UserService();
+        IUserService.setOnline();
     }
 
 
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
     private void signOut() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.signOut();
-        userService.setOffline();
+        IUserService.setOffline();
         goToLoginActivity();
     }
 
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // on app exit
-        userService.setOffline();
+        IUserService.setOffline();
         finish();
     }
 

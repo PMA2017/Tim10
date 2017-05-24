@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,8 +15,8 @@ import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.model.User;
+import com.example.pma_tim10.chatapp.service.IAuthService;
 import com.example.pma_tim10.chatapp.service.AuthService;
-import com.example.pma_tim10.chatapp.service.AuthServiceImpl;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -44,7 +43,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private FirebaseAuth mAuth;
     // [END declare_auth]
 
-    private AuthService authService;
+    private IAuthService IAuthService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,7 +58,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.btn_create_account).setOnClickListener(this);
 
         this.mAuth = FirebaseAuth.getInstance();
-        this.authService = new AuthServiceImpl();
+        this.IAuthService = new AuthService();
 
     }
 
@@ -133,7 +132,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             FirebaseUser user = mAuth.getCurrentUser();
                             //register new user to real time db
                             newUser.setUid(user.getUid());
-                            authService.registerUser(user.getUid(), newUser);
+                            IAuthService.registerUser(user.getUid(), newUser);
                             goToMainActivity();
                         } else {
                             // If sign in fails, display a message to the user.

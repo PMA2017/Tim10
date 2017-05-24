@@ -12,10 +12,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.R;
-import com.example.pma_tim10.chatapp.dao_layer.UserDAO;
-import com.example.pma_tim10.chatapp.model.User;
-import com.example.pma_tim10.chatapp.service.AuthService;
-import com.example.pma_tim10.chatapp.service.AuthServiceImpl;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

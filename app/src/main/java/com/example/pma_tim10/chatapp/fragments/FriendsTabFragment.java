@@ -8,23 +8,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.activities.UserDetailsActivity;
 import com.example.pma_tim10.chatapp.adapters.FriendsArrayAdapter;
+import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
 import com.example.pma_tim10.chatapp.model.User;
+import com.example.pma_tim10.chatapp.service.IUserService;
 import com.example.pma_tim10.chatapp.service.UserService;
-import com.example.pma_tim10.chatapp.service.UserServiceImpl;
 import com.example.pma_tim10.chatapp.utils.Constants;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,6 +38,8 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
     private List<User> friends;
     private FriendsArrayAdapter friendsArrayAdapter;
 
+    private IUserService userService;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,6 +52,8 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        userService = new UserService();
+
         friends = new ArrayList<>();
         friendsArrayAdapter = new FriendsArrayAdapter(getActivity(), android.R.id.list, friends);
         setListAdapter(friendsArrayAdapter);
@@ -62,8 +63,10 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
     }
 
 
-    private void updateUI(){
-        friendsArrayAdapter.notifyDataSetChanged();
+    private void updateUI(List<User> data){
+        friends.removeAll(friends);
+        friends.addAll(data);
+        friendsArrayAdapter.notifyDataSetChanged();;
     }
 
     @Override
@@ -82,53 +85,10 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
 
     // GET DATA FROM FIREBASE -- MUST BE IN ACTIVITY/FRAGMENT CLASSES -- UPDATE UI
     private void populateFriends() {
-        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-
-        // get uids of current user friends
-        databaseReference.child(Constants.FRIENDSHIPS)
-                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+        userService.getFriends(new IFirebaseCallback() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // clear adapter list if friendships are changed
-                friends.clear();
-
-                Map<String, Boolean> objects = (HashMap<String, Boolean>) dataSnapshot.getValue();
-                if (objects == null)
-                    return;
-
-                // get details for friends
-                // or update friend if changed
-                for(final String friendId : objects.keySet()){
-                    databaseReference.child(Constants.USERS).child(friendId).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            User user = dataSnapshot.getValue(User.class);
-                            // friend updated
-                            if(friends.contains(user)){
-                                int idx = friends.indexOf(user);
-                                friends.remove(idx);
-                                friends.add(idx,user);
-                            }else{
-                                friends.add(user);
-                            }
-                            updateUI();
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-
-                //update UI
-                updateUI();
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void notifyUI(List data) {
+                updateUI((List<User>)data);
             }
         });
     }
