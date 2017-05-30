@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pma_tim10.chatapp.R;
+import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.User;
 
 import java.util.List;
@@ -18,11 +19,11 @@ import java.util.List;
  * Created by Dorian on 5/15/2017.
  */
 
-public class MessagesArrayAdapter extends ArrayAdapter<User> {
+public class MessagesArrayAdapter extends ArrayAdapter<Conversation> {
 
     Context context;
 
-    public MessagesArrayAdapter(Context context, int textViewResourceId, List<User> objects){
+    public MessagesArrayAdapter(Context context, int textViewResourceId, List<Conversation> objects){
         super(context,textViewResourceId,objects);
         this.context = context;
     }
@@ -36,7 +37,7 @@ public class MessagesArrayAdapter extends ArrayAdapter<User> {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         MessagesArrayAdapter.ViewHolder holder = null;
-        User rowItem = getItem(position);
+        Conversation rowItem = getItem(position);
 
         LayoutInflater mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -52,8 +53,8 @@ public class MessagesArrayAdapter extends ArrayAdapter<User> {
             holder = (MessagesArrayAdapter.ViewHolder) convertView.getTag();
 
         holder.txtConversationName.setText(rowItem.getName());
-        holder.txtLastMessage.setText(rowItem.getSurname());
-        holder.txtLastChattingDate.setText("Online: " + 1000 + " mins");
+        holder.txtLastMessage.setText(rowItem.getLastMessage());
+        holder.txtLastChattingDate.setText("Online: " + rowItem.getTimestamp().toString() + " mins");
         holder.imageView.setImageResource(R.drawable.testing_image);
 
 
