@@ -1,5 +1,8 @@
 package com.example.pma_tim10.chatapp.model;
 
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -8,17 +11,21 @@ import java.util.Set;
 
 public class Conversation {
     private Integer id;
-    private Set<User> users;
-    private Set<Message> messages;
+    private String name;
+    private Map<String,Boolean> members;
+    private String lastMessage;
+    private Timestamp timestamp;
 
     public Conversation() {
 
     }
 
-    public Conversation(Integer id, Set<User> users, Set<Message> messages) {
+    public Conversation(Integer id, String name, Map<String, Boolean> members, String lastMessage, Timestamp timestamp) {
         this.id = id;
-        this.users = users;
-        this.messages = messages;
+        this.name = name;
+        this.members = members;
+        this.lastMessage = lastMessage;
+        this.timestamp = timestamp;
     }
 
     public Integer getId() {
@@ -29,19 +36,35 @@ public class Conversation {
         this.id = id;
     }
 
-    public Set<User> getUsers() {
-        return users;
+    public String getName() {
+        return name;
     }
 
-    public void setUsers(Set<User> users) {
-        this.users = users;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Set<Message> getMessages() {
-        return messages;
+    public Map<String, Boolean> getMembers() {
+        return members;
     }
 
-    public void setMessages(Set<Message> messages) {
-        this.messages = messages;
+    public void setMembers(Map<String, Boolean> members) {
+        this.members = members;
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 }
