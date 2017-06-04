@@ -7,40 +7,42 @@ import java.util.Date;
  */
 
 public class Message {
-    private Integer id;
-    private Date date;
+    private String id;
+    private Long timestamp;
     private String content;
     private Double longitude;
     private Double latitude;
-    private User sender;
+    private String sender;
+    private String senderName;
 
     public Message() {
 
     }
 
-    public Message(Integer id, Date date, String content, Double longitude, Double latitude, User sender) {
+    public Message(String id, Long timestamp, String content, Double longitude, Double latitude, String sender, String senderName) {
         this.id = id;
-        this.date = date;
+        this.timestamp = timestamp;
         this.content = content;
         this.longitude = longitude;
         this.latitude = latitude;
         this.sender = sender;
+        this.senderName = senderName;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Date getDate() {
-        return date;
+    public Long getTimestamp() {
+        return timestamp;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getContent() {
@@ -67,11 +69,19 @@ public class Message {
         this.latitude = latitude;
     }
 
-    public User getSender() {
+    public String getSender() {
         return sender;
     }
 
-    public void setSender(User sender) {
+    public void setSender(String sender) {
         this.sender = sender;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 }
