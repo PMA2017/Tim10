@@ -15,6 +15,15 @@ public class Constants {
     // intent extra keys
     public static final String IE_USER_ID_KEY = "userid";
 
+    // conversation fields
+    public static final String CONVERSATION_FIELD_ID = "id";
+    public static final String CONVERSATION_FIELD_MEMBERS = "members";
+    public static final String CONVERSATION_FIELD_LAST_MESSAGE = "lastMessage";
+    public static final String CONVERSATION_FIELD_TIMESTAMP = "timestamp";
+    public static final String CONVERSATION_FIELD_NAME = "name";
+
     // other
     public static final String USER_ONLINE_FIELD = "online";
+    public static final String CONVERSATION_ID_PARAM = "conversationId";
+    public static final String USERS_IN_CHAT = "usersInChat";
 }

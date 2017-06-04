@@ -3,6 +3,7 @@ package com.example.pma_tim10.chatapp.model;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -10,17 +11,17 @@ import java.util.Set;
  */
 
 public class Conversation {
-    private Integer id;
+    private String id;
     private String name;
-    private Map<String,Boolean> members;
+    private Map<String,Object> members;
     private String lastMessage;
-    private Timestamp timestamp;
+    private Long timestamp;
 
     public Conversation() {
 
     }
 
-    public Conversation(Integer id, String name, Map<String, Boolean> members, String lastMessage, Timestamp timestamp) {
+    public Conversation(String id, String name, Map<String, Object> members, String lastMessage, Long timestamp) {
         this.id = id;
         this.name = name;
         this.members = members;
@@ -28,11 +29,11 @@ public class Conversation {
         this.timestamp = timestamp;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -44,11 +45,11 @@ public class Conversation {
         this.name = name;
     }
 
-    public Map<String, Boolean> getMembers() {
+    public Map<String, Object> getMembers() {
         return members;
     }
 
-    public void setMembers(Map<String, Boolean> members) {
+    public void setMembers(Map<String, Object> members) {
         this.members = members;
     }
 
@@ -60,11 +61,11 @@ public class Conversation {
         this.lastMessage = lastMessage;
     }
 
-    public Timestamp getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 }

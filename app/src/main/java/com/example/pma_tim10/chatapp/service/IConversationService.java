@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface IConversationService {
 
-    public List<Conversation> getConversations(final IFirebaseCallback callback);
+    public void getConversations(final IFirebaseCallback callback);
+    public void addConversation(Conversation conversation, IFirebaseCallback callback);
 
 }

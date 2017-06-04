@@ -49,6 +49,7 @@ public class MessagesArrayAdapter extends ArrayAdapter<Conversation> {
             holder.txtLastChattingDate = (TextView) convertView.findViewById(R.id.last_chatting_date);
             holder.imageView = (ImageView) convertView.findViewById(R.id.list_image);
             convertView.setTag(holder);
+
         } else
             holder = (MessagesArrayAdapter.ViewHolder) convertView.getTag();
 
