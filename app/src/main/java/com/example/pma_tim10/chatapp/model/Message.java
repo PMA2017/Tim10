@@ -1,5 +1,7 @@
 package com.example.pma_tim10.chatapp.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -27,6 +29,12 @@ public class Message {
         this.latitude = latitude;
         this.sender = sender;
         this.senderName = senderName;
+    }
+
+    public String getDateTimeFormatted(){
+        Date date = new Date(this.timestamp);
+        DateFormat formatter = new SimpleDateFormat("HH:mm");
+        return formatter.format(date);
     }
 
     public String getId() {

@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.model.Conversation;
-import com.example.pma_tim10.chatapp.model.User;
 
 import java.util.List;
 
@@ -55,7 +54,7 @@ public class MessagesArrayAdapter extends ArrayAdapter<Conversation> {
 
         holder.txtConversationName.setText(rowItem.getName());
         holder.txtLastMessage.setText(rowItem.getLastMessage());
-        holder.txtLastChattingDate.setText("Online: " + rowItem.getTimestamp().toString() + " mins");
+        holder.txtLastChattingDate.setText(rowItem.getDateTimeFormatted());
         holder.imageView.setImageResource(R.drawable.testing_image);
 
 

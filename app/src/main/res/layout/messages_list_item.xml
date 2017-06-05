@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/thumbnail"
         android:layout_toRightOf="@+id/thumbnail"
+        android:layout_toLeftOf="@+id/last_chatting_date"
         android:textColor="#040404"
         android:textSize="15sp"
         android:textStyle="bold"

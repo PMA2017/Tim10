@@ -14,5 +14,6 @@
     <string name="hint_search">Search...</string>
     <string name="add">Add</string>
     <string name="new_message">New</string>
+    <string name="action_upload_photo">Upload photo</string>
 
 </resources>
