@@ -31,9 +31,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -148,9 +152,13 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
 
     private LinearLayout getCurrentUserMessageUI(Message message){
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.right_message_in_conversation, null);
+        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.left_message_in_conversation, null);
 
-        TextView textView = (TextView)linearLayout.findViewById(R.id.right_message_textview_id);
+        String timeString = getLocalizedTime(message.getTimestamp());
+        TextView dateTextView = (TextView)linearLayout.findViewById(R.id.left_label_date);
+        dateTextView.setText(timeString);
+
+        TextView textView = (TextView)linearLayout.findViewById(R.id.left_message_textview_id);
         textView.setText(message.getContent());
 
         return linearLayout;
@@ -158,9 +166,13 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
 
     private LinearLayout getUserToChatMessageUI(Message message) {
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.left_message_in_conversation, null);
+        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.right_message_in_conversation, null);
 
-        TextView textView = (TextView)linearLayout.findViewById(R.id.left_message_textview_id);
+        String timeString = getLocalizedTime(message.getTimestamp());
+        TextView dateTextView = (TextView)linearLayout.findViewById(R.id.right_label_date);
+        dateTextView.setText(timeString);
+
+        TextView textView = (TextView)linearLayout.findViewById(R.id.right_message_textview_id);
         textView.setText(message.getContent());
 
         return linearLayout;
@@ -241,4 +253,12 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
 
         }
     }
+
+    private String getLocalizedTime(Long timestamp){
+        Date date = new Date(timestamp);
+        Locale aLocale = getResources().getConfiguration().locale;
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", aLocale);
+        return sdf.format(date);
+    }
+
 }
