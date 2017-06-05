@@ -1,10 +1,19 @@
 package com.example.pma_tim10.chatapp.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Shader;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +27,7 @@ import com.example.pma_tim10.chatapp.service.IConversationService;
 import com.example.pma_tim10.chatapp.service.IUserService;
 import com.example.pma_tim10.chatapp.service.UserService;
 import com.example.pma_tim10.chatapp.utils.Constants;
+import com.example.pma_tim10.chatapp.utils.Utility;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +54,7 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
     private DatabaseReference databaseReference;
     private FirebaseUser currentUser;
 
-    private IUserService IUserService;
+    private IUserService userService;
     private IConversationService conversationService;
 
     private ImageButton ibtnAddFriend;
@@ -66,7 +76,7 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_details);
 
-        IUserService = new UserService();
+        userService = new UserService();
         conversationService = new ConversationService();
 
         userId = getIntent().getStringExtra(Constants.IE_USER_ID_KEY);
@@ -89,17 +99,11 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void getUsersDetails(String userId){
-        databaseReference.child(Constants.USERS).child(userId).addValueEventListener(new ValueEventListener(){
-
+        userService.getUserDetails(userId, new IFirebaseCallback() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                userProfile = dataSnapshot.getValue(User.class);
-                updateUI(userProfile);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void notifyUI(List data) {
+                User user = ((List<User>)data).get(0);
+                updateUI(user);
             }
         });
     }
@@ -140,6 +144,17 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
         tvUserFullName.setText(user.getName() + " " + user.getSurname());
         tvUserEmail.setText(user.getEmail());
         tvUserAboutMe.setText(user.getAboutMe());
+
+        // profile photo loading
+        Animation anim = new ScaleAnimation(0, 1, 0, 1, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        anim.setDuration(1000);
+        ivUserPhoto.startAnimation(anim);
+
+        Bitmap bitmap = user.getUserProfilePhoto();
+        if(bitmap!=null) {
+            ivUserPhoto.setAnimation(null);
+            ivUserPhoto.setImageBitmap(Utility.getCircleBitmap(bitmap));
+        }
     }
 
     private void goToMainActivity(){
@@ -212,11 +227,11 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void addFriend() {
-        IUserService.addFriend(userProfile.getUid());
+        userService.addFriend(userProfile.getUid());
     }
 
     private void removeFriend() {
-        IUserService.removeFriend(userProfile.getUid());
+        userService.removeFriend(userProfile.getUid());
     }
 
     @Override

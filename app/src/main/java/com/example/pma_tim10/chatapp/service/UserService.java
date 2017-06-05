@@ -1,8 +1,16 @@
 package com.example.pma_tim10.chatapp.service;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
 import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.utils.Constants;
+import com.example.pma_tim10.chatapp.utils.Utility;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -10,7 +18,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,10 +38,14 @@ public class UserService implements IUserService {
 
     private DatabaseReference databaseReference;
     private FirebaseUser currentUser;
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
 
     public UserService() {
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
         this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        this.storage = FirebaseStorage.getInstance();
+        this.storageReference = storage.getReference();
     }
 
     @Override
@@ -109,6 +126,44 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public void getUserDetails(String userId, final IFirebaseCallback callback) {
+        databaseReference.child(Constants.USERS).child(userId).addListenerForSingleValueEvent(new ValueEventListener(){
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final List<User> users = new ArrayList<User>();
+                final User user = dataSnapshot.getValue(User.class);
+
+                String path = Constants.USER_PROFILE_PHOTO_PATH + user.getUid();
+                final long ONE_MEGABYTE = 1024 * 1024;
+                storageReference.child(path).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        // Data for "images/island.jpg" is returns, use this as needed
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes , 0, bytes.length);
+                        user.setUserProfilePhoto(bitmap);
+                        users.clear();
+                        users.add(user);
+                        callback.notifyUI(users);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+
+                users.add(user);
+                callback.notifyUI(users);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
     public void addFriend(String friendsUid) {
         // friendships:
         //logged_in_id:
@@ -147,6 +202,41 @@ public class UserService implements IUserService {
     @Override
     public void setOffline() {
         databaseReference.child(Constants.USERS).child(currentUser.getUid()).child(Constants.USER_ONLINE_FIELD).setValue(false);
+    }
+
+    @Override
+    public void uploadPhoto(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            bitmap = Utility.getResizedBitmap(bitmap,480,640);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
+
+            String path = Constants.USER_PROFILE_PHOTO_PATH + currentUser.getUid();
+            UploadTask uploadTask = storageReference.child(path).putBytes(data);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                }
+            });
+        }catch (Exception e)
+        {
+
+        }
+        finally {
+            try {
+                baos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

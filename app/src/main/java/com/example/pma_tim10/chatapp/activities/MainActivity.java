@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mViewPager;
 
     private NetworkConnectivityReceiver networkConnectivityReceiver;
-    private IUserService IUserService;
+    private IUserService userService;
 
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     private String userChoosenTask;
@@ -86,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(networkConnectivityReceiver,intentFilter);
 
         // set this user online
-        IUserService = new UserService();
-        IUserService.setOnline();
+        userService = new UserService();
+        userService.setOnline();
     }
 
 
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
     private void signOut() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.signOut();
-        IUserService.setOffline();
+        userService.setOffline();
         goToLoginActivity();
     }
 
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // on app exit
-        IUserService.setOffline();
+        userService.setOffline();
         finish();
     }
 
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent intent = new Intent();
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);//
+        intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select File"), SELECT_FILE);
     }
 
@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         if (data != null) {
             try {
                 bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
-
+                userService.uploadPhoto(bm);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -225,7 +225,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onCaptureImageResult(Intent data) {
-        Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+        Bitmap bm = (Bitmap) data.getExtras().get("data");
+        userService.uploadPhoto(bm);
 //        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 //        thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
 //        File destination = new File(Environment.getExternalStorageDirectory(),

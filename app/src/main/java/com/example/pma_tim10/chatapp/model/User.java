@@ -1,5 +1,9 @@
 package com.example.pma_tim10.chatapp.model;
 
+import android.graphics.Bitmap;
+
+import com.google.firebase.database.Exclude;
+
 import java.util.Objects;
 
 /**
@@ -13,6 +17,9 @@ public class User {
     private String photoURL;
     private String aboutMe;
     private Boolean online;
+
+    @Exclude
+    private Bitmap userProfilePhoto;
 
     public User() {
     }
@@ -85,6 +92,14 @@ public class User {
 
     public String getStatus(){
         return isOnline() == true ? "online" : "offline";
+    }
+
+    public Bitmap getUserProfilePhoto() {
+        return userProfilePhoto;
+    }
+
+    public void setUserProfilePhoto(Bitmap userProfilePhoto) {
+        this.userProfilePhoto = userProfilePhoto;
     }
 
     @Override
