@@ -2,6 +2,8 @@ package com.example.pma_tim10.chatapp.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,55 +12,82 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pma_tim10.chatapp.R;
-import com.example.pma_tim10.chatapp.model.Conversation;
+import com.example.pma_tim10.chatapp.activities.MessagesActivity;
+import com.example.pma_tim10.chatapp.model.Message;
+import com.example.pma_tim10.chatapp.utils.Utility;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
- * Created by Dorian on 5/15/2017.
+ * Created by Daniel on 6/7/2017.
  */
 
-public class MessagesArrayAdapter extends ArrayAdapter<Conversation> {
+public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdapter.MessageViewHolder> {
 
-    Context context;
+    private List<Message> messages;
+    private FirebaseUser currentUser;
 
-    public MessagesArrayAdapter(Context context, int textViewResourceId, List<Conversation> objects){
-        super(context,textViewResourceId,objects);
-        this.context = context;
+    private final int MSG_SENT = 1;
+    private final int MSG_RECEIVED = 2;
+
+    public MessagesArrayAdapter(List<Message> msgs){
+        this.messages = msgs;
+        this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
-    private class ViewHolder {
-        ImageView imageView;
-        TextView txtConversationName;
-        TextView txtLastMessage;
-        TextView txtLastChattingDate;
+
+    public class MessageViewHolder extends RecyclerView.ViewHolder {
+        public ImageView ivSenderPhoto;
+        public TextView txtMessageText;
+        public TextView txtMessageDateTime;
+
+        public MessageViewHolder(View view) {
+            super(view);
+            ivSenderPhoto = (ImageView) view.findViewById(R.id.sender_photo);
+            txtMessageText = (TextView) view.findViewById(R.id.message_text);
+            txtMessageDateTime = (TextView) view.findViewById(R.id.message_datetime);
+        }
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
-        MessagesArrayAdapter.ViewHolder holder = null;
-        Conversation rowItem = getItem(position);
+    @Override
+    public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view;
+        if (viewType == MSG_SENT)
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_sent, parent, false);
+        else
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_received, parent, false);
 
-        LayoutInflater mInflater = (LayoutInflater) context
-                .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.messages_list_item, null);
-            holder = new MessagesArrayAdapter.ViewHolder();
-            holder.txtConversationName = (TextView) convertView.findViewById(R.id.conversation_name);
-            holder.txtLastMessage = (TextView) convertView.findViewById(R.id.last_message);
-            holder.txtLastChattingDate = (TextView) convertView.findViewById(R.id.last_chatting_date);
-            holder.imageView = (ImageView) convertView.findViewById(R.id.list_image);
-            convertView.setTag(holder);
-
-        } else
-            holder = (MessagesArrayAdapter.ViewHolder) convertView.getTag();
-
-        holder.txtConversationName.setText(rowItem.getName());
-        holder.txtLastMessage.setText(rowItem.getLastMessage());
-        holder.txtLastChattingDate.setText(rowItem.getDateTimeFormatted());
-        holder.imageView.setImageResource(R.drawable.testing_image);
+        return new MessageViewHolder(view);
+    }
 
 
-        return convertView;
+    @Override
+    public int getItemViewType(int position) {
+        Message msg = messages.get(position);
+        if(currentUser.getUid().equals(msg.getSender()))
+            return MSG_SENT;
+        else
+            return MSG_RECEIVED;
+    }
+
+    @Override
+    public void onBindViewHolder(MessageViewHolder holder, int position) {
+        Message message = messages.get(position);
+        holder.txtMessageText.setText(message.getContent());
+        holder.txtMessageDateTime.setText(message.getDateTimeFormatted());
+        Bitmap bitmap = MessagesActivity.usersInChat.get(message.getSender()).getUserProfilePhoto();
+        if(bitmap != null)
+            holder.ivSenderPhoto.setImageBitmap(bitmap);
+    }
+
+    @Override
+    public int getItemCount() {
+        return messages.size();
     }
 
 }

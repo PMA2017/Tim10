@@ -31,7 +31,7 @@
             android:name=".activities.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".activities.ConversationActivity">
+        <activity android:name=".activities.MessagesActivity">
         </activity>
         <activity android:name=".activities.SignUpActivity">
         </activity>

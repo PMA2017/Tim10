@@ -27,4 +27,6 @@ public class Constants {
     public static final String CONVERSATION_ID_PARAM = "conversationId";
     public static final String USERS_IN_CHAT = "usersInChat";
     public static final String USER_PROFILE_PHOTO_PATH = "profile_photos/";
+
+    public static final String IE_CONVERSATION_ID_KEY = "conversationid";
 }

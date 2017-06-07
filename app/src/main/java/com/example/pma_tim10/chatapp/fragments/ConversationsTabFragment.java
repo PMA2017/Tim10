@@ -12,11 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 
 import com.example.pma_tim10.chatapp.R;
-import com.example.pma_tim10.chatapp.activities.ConversationActivity;
-import com.example.pma_tim10.chatapp.adapters.MessagesArrayAdapter;
+import com.example.pma_tim10.chatapp.activities.MessagesActivity;
+import com.example.pma_tim10.chatapp.adapters.ConversationsArrayAdapter;
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
 import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.service.ConversationService;
@@ -26,17 +25,17 @@ import com.example.pma_tim10.chatapp.utils.Constants;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessagesTabFragment extends ListFragment implements AdapterView.OnItemClickListener {
+public class ConversationsTabFragment extends ListFragment implements AdapterView.OnItemClickListener {
 
     ArrayList<Conversation> conversations;
-    MessagesArrayAdapter messagesArrayAdapter;
+    ConversationsArrayAdapter conversationsArrayAdapter;
 
     IConversationService iConversationService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.messages_tab, container, false);
+        View rootView = inflater.inflate(R.layout.conversations_tab, container, false);
         return rootView;
     }
 
@@ -47,8 +46,8 @@ public class MessagesTabFragment extends ListFragment implements AdapterView.OnI
         iConversationService = new ConversationService();
 
         conversations = new ArrayList<>();
-        messagesArrayAdapter = new MessagesArrayAdapter(getActivity(),android.R.id.list, conversations);
-        setListAdapter(messagesArrayAdapter);
+        conversationsArrayAdapter = new ConversationsArrayAdapter(getActivity(),android.R.id.list, conversations);
+        setListAdapter(conversationsArrayAdapter);
         getListView().setOnItemClickListener(this);
 
         populateConversations();
@@ -57,8 +56,8 @@ public class MessagesTabFragment extends ListFragment implements AdapterView.OnI
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Conversation conversation = (Conversation)adapterView.getItemAtPosition(i);
-        Intent intent = new Intent(getActivity(),ConversationActivity.class);
-        intent.putExtra(Constants.CONVERSATION_ID_PARAM,conversation.getId());
+        Intent intent = new Intent(getActivity(),MessagesActivity.class);
+        intent.putExtra(Constants.IE_CONVERSATION_ID_KEY,conversation.getId());
         getActivity().startActivity(intent);
         getActivity().finish();
     }
@@ -75,7 +74,7 @@ public class MessagesTabFragment extends ListFragment implements AdapterView.OnI
     private void updateUI(List<Conversation> data){
         conversations.removeAll(conversations);
         conversations.addAll(data);
-        messagesArrayAdapter.notifyDataSetChanged();
+        conversationsArrayAdapter.notifyDataSetChanged();
     }
 
 }

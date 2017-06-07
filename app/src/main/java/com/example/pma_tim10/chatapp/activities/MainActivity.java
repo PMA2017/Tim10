@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
@@ -23,20 +22,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.pma_tim10.chatapp.R;
+import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
 import com.example.pma_tim10.chatapp.fragments.FriendsTabFragment;
-import com.example.pma_tim10.chatapp.fragments.MessagesTabFragment;
+import com.example.pma_tim10.chatapp.fragments.ConversationsTabFragment;
 import com.example.pma_tim10.chatapp.fragments.PeopleTabFragment;
+import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.receivers.NetworkConnectivityReceiver;
 import com.example.pma_tim10.chatapp.service.IUserService;
 import com.example.pma_tim10.chatapp.service.UserService;
 import com.example.pma_tim10.chatapp.utils.Utility;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         // set this user online
         userService = new UserService();
         userService.setOnline();
+
     }
 
 
@@ -267,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
                     FriendsTabFragment friendsTab = new FriendsTabFragment();
                     return friendsTab;
                 case 2:
-                    MessagesTabFragment messagesTab = new MessagesTabFragment();
+                    ConversationsTabFragment messagesTab = new ConversationsTabFragment();
                     return messagesTab;
                 default:
                     return null;

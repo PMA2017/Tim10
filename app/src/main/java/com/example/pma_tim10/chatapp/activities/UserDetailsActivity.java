@@ -2,17 +2,11 @@ package com.example.pma_tim10.chatapp.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Shader;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -20,7 +14,6 @@ import android.widget.TextView;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
-import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.service.ConversationService;
 import com.example.pma_tim10.chatapp.service.IConversationService;
@@ -36,11 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Daniel on 5/23/2017.
@@ -102,8 +91,8 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
         userService.getUserDetails(userId, new IFirebaseCallback() {
             @Override
             public void notifyUI(List data) {
-                User user = ((List<User>)data).get(0);
-                updateUI(user);
+                userProfile = ((List<User>)data).get(0);
+                updateUI(userProfile);
             }
         });
     }
@@ -184,46 +173,17 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
         }
         //btn open chat
         if (i == R.id.open_chat){
-            final Conversation[] conversation = new Conversation[1];
-            conversationService.getConversations(new IFirebaseCallback() {
-                @Override
-                public void notifyUI(List data) {
-                    conversation[0] = findConversation((List<Conversation>)data);
-                }
-            });
-            checkConversationAndDoAction(conversation[0]);
+            goToChatActivity(userProfile.getUid());
         }
 
     }
 
-    private void checkConversationAndDoAction(Conversation currentConversation) {
-        if (currentConversation == null) {
-            ArrayList<String> usersInChat = new ArrayList<>();
-            usersInChat.add(userProfile.getUid());
-            goToChatActivity(null,usersInChat);
-        } else {
-            goToChatActivity(currentConversation.getId(),null);
-        }
-    }
-
-    private Conversation findConversation(List<Conversation> conversations){
-        for (Conversation conversation : conversations) {
-            if (    conversation.getMembers().containsKey(currentUser.getUid()) &&
-                    conversation.getMembers().containsKey(userProfile.getUid()) &&
-                    conversation.getMembers().size() == 2)
-                return conversation;
-        }
-        return null;
-    }
-
-    private void goToChatActivity(String conversationId, ArrayList<String> usersInChat) {
+    private void goToChatActivity(String userId) {
         Log.d(TAG,"Going to chat activity");
-        Intent intent = new Intent(this,ConversationActivity.class);
-        intent.putExtra(Constants.CONVERSATION_ID_PARAM,conversationId);
-        intent.putStringArrayListExtra(Constants.USERS_IN_CHAT, usersInChat);
+        Intent intent = new Intent(this,MessagesActivity.class);
+        intent.putExtra(Constants.IE_USER_ID_KEY, userId);
         startActivity(intent);
         finish();
-
     }
 
     private void addFriend() {
