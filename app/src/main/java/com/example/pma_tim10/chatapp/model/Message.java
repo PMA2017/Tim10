@@ -1,10 +1,13 @@
 package com.example.pma_tim10.chatapp.model;
 
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.ServerValue;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.TimeZone;
 
 /**
  * Created by Dorian on 5/20/2017.
@@ -19,8 +22,12 @@ public class Message {
     private String sender;
     private String senderName;
 
-    public Message() {
+    private HashMap<String, Object> timestampCreated;
 
+    public Message() {
+        HashMap<String, Object> timestampNow = new HashMap<>();
+        timestampNow.put("timestamp", ServerValue.TIMESTAMP);
+        this.timestampCreated = timestampNow;
     }
 
     public Message(String id, Long timestamp, String content, Double longitude, Double latitude, String sender, String senderName) {
@@ -31,13 +38,28 @@ public class Message {
         this.latitude = latitude;
         this.sender = sender;
         this.senderName = senderName;
+
+        HashMap<String, Object> timestampNow = new HashMap<>();
+        timestampNow.put("timestamp", ServerValue.TIMESTAMP);
+        this.timestampCreated = timestampNow;
     }
 
     @Exclude
     public String getDateTimeFormatted(){
-        Date date = new Date(this.timestamp);
+        Date date = new Date(getTimestampCreatedLong());
         DateFormat formatter = new SimpleDateFormat("HH:mm");
+        formatter.setTimeZone(TimeZone.getDefault());
         return formatter.format(date);
+    }
+
+    public HashMap<String, Object> getTimestampCreated(){
+        return timestampCreated;
+    }
+
+
+    @Exclude
+    public long getTimestampCreatedLong(){
+        return (long)timestampCreated.get("timestamp");
     }
 
     public String getId() {

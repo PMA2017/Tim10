@@ -1,13 +1,10 @@
 package com.example.pma_tim10.chatapp.adapters;
 
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,10 +15,7 @@ import com.example.pma_tim10.chatapp.utils.Utility;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by Daniel on 6/7/2017.

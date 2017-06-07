@@ -133,7 +133,7 @@ public class ConversationService implements IConversationService {
         conversation.setId(conversationId);
         String lastMessage = message.getSenderName() + ": " + message.getContent();
         conversation.setLastMessage(lastMessage);
-        conversation.setTimestamp(System.currentTimeMillis());
+        conversation.setTimestamp(message.getTimestamp());
         StringBuilder cName = new StringBuilder();
         for(User user : usersInChat.values())
                 cName.append(user.getName() + " " + user.getSurname() + " ");

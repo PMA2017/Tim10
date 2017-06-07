@@ -28,9 +28,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 
 /**
@@ -160,7 +162,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 
         final Message newMsg = new Message();
         newMsg.setContent(msgText);
-        newMsg.setTimestamp(System.currentTimeMillis());
+        newMsg.setTimestamp(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis());
         newMsg.setSenderName(currentUser.getDisplayName());
         newMsg.setSender(currentUser.getUid());
         messageService.sendMessage(newMsg, usersInChat , conversationId, new IFirebaseCallback() {
