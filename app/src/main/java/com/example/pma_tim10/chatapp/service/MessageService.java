@@ -3,6 +3,7 @@ package com.example.pma_tim10.chatapp.service;
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
 import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.Message;
+import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.utils.Constants;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Dorian on 6/2/2017.
@@ -55,11 +57,12 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void sendMessage(final Message message, final Collection<String> usersInChat, final String conversationId, final IFirebaseCallback callback) {
+    public void sendMessage(final Message message, final Map<String,User> usersInChat, final String conversationId, final IFirebaseCallback callback) {
         conversationService.addOrUpdateConversation(conversationId,message,usersInChat, new IFirebaseCallback() {
             @Override
             public void notifyUI(List data) {
-                DatabaseReference tempRef = FirebaseDatabase.getInstance().getReference().child(Constants.MESSAGES).child(conversationId).push();
+                Conversation conversation = (Conversation) data.get(0);
+                DatabaseReference tempRef = FirebaseDatabase.getInstance().getReference().child(Constants.MESSAGES).child(conversation.getId()).push();
                 message.setId(tempRef.getKey());
                 tempRef.setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

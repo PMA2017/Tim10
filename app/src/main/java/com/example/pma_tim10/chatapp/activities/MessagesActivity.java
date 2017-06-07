@@ -3,16 +3,13 @@ package com.example.pma_tim10.chatapp.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.adapters.MessagesArrayAdapter;
@@ -58,7 +55,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 
     private FirebaseUser currentUser;
 
-    private RecyclerView listView;
+    private RecyclerView recyclerView;
 
     private EditText etNewMessageText;
     private ImageButton btnSendMessage;
@@ -75,8 +72,9 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         messages = new ArrayList<>();
         usersInChat = new HashMap<>();
         messagesArrayAdapter = new MessagesArrayAdapter(messages);
-        listView = (RecyclerView) findViewById(R.id.message_list);
-        listView.setAdapter(messagesArrayAdapter);
+        recyclerView = (RecyclerView) findViewById(R.id.message_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(messagesArrayAdapter);
 
 
         messageService = new MessageService();
@@ -88,32 +86,28 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        populateMessages();
+        conversationId = conversationId != null ? conversationId : UUID.randomUUID().toString();
+
+        populateUsers(conversationId);
     }
 
-    private void populateMessages() {
-        if(conversationId == null)
-            conversationService.getConversationIdForUserId(secondUserId, new IFirebaseCallback() {
-                @Override
-                public void notifyUI(List data) {
-                    if(data.size() > 0)
-                        getConversationData(((Conversation)data.get(0)).getId());
-                    else
-                        conversationId = UUID.randomUUID().toString();
-                }
-            });
-        else
-            getConversationData(conversationId);
-
-
-    }
-
-    private void getConversationData(final String conversationId){
-        conversationService.getConversationUsers(conversationId, new IFirebaseCallback() {
+    private void populateUsers(final String conversationId) {
+        conversationService.getConversationUsers(conversationId, currentUser.getUid(), secondUserId, new IFirebaseCallback() {
             @Override
             public void notifyUI(List data) {
                 initUsers((List<User>)data);
-                getMessages(conversationId);
+                populateMessages(conversationId);
+            }
+        });
+    }
+
+
+    private void populateMessages(final String conversationId){
+        messageService.getMessages(conversationId, new IFirebaseCallback() {
+            @Override
+            public void notifyUI(List data) {
+                if (data.size() > 0)
+                    updateUI((List<Message>) data);
             }
         });
     }
@@ -122,16 +116,6 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         usersInChat.clear();
         for(User u : users)
             usersInChat.put(u.getUid(), u);
-    }
-
-    private void getMessages(String conversationId){
-        messageService.getMessages(conversationId, new IFirebaseCallback() {
-            @Override
-            public void notifyUI(List data) {
-                if (data.size() > 0)
-                    updateUI((List<Message>) data);
-            }
-        });
     }
 
     private void updateUI(List<Message> messages) {
@@ -174,31 +158,25 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
             return;
         }
 
-        Message newMsg = new Message();
+        final Message newMsg = new Message();
         newMsg.setContent(msgText);
         newMsg.setTimestamp(System.currentTimeMillis());
         newMsg.setSenderName(currentUser.getDisplayName());
         newMsg.setSender(currentUser.getUid());
-        Collection<String> usersInChatIds = new ArrayList<>();
-        if(usersInChat.isEmpty()){
-            usersInChatIds.add(currentUser.getUid());
-            usersInChatIds.add(secondUserId);
-        }else
-            usersInChatIds = usersInChat.keySet();
-        messageService.sendMessage(newMsg, usersInChatIds , conversationId, new IFirebaseCallback() {
+        messageService.sendMessage(newMsg, usersInChat , conversationId, new IFirebaseCallback() {
             @Override
             public void notifyUI(List data) {
-                //scrollDown();
+//                messages.add(newMsg);
                 etNewMessageText.setText("");
             }
         });
     }
 
     private void scrollDown(){
-        listView.post(new Runnable() {
+        recyclerView.post(new Runnable() {
             @Override
             public void run() {
-                listView.scrollToPosition(messages.size()-1);
+                recyclerView.scrollToPosition(messages.size()-1);
             }
         });
     }

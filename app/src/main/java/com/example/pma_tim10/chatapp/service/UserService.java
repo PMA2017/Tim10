@@ -152,8 +152,8 @@ public class UserService implements IUserService {
                     }
                 });
 
-                users.add(user);
-                callback.notifyUI(users);
+//                users.add(user);
+//                callback.notifyUI(users);
             }
 
             @Override

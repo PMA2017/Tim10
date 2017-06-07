@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.model.Conversation;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -21,10 +23,12 @@ import java.util.List;
 public class ConversationsArrayAdapter extends ArrayAdapter<Conversation> {
 
     Context context;
+    private FirebaseUser currentUser;
 
     public ConversationsArrayAdapter(Context context, int textViewResourceId, List<Conversation> objects){
         super(context,textViewResourceId,objects);
         this.context = context;
+        this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     private class ViewHolder {
@@ -52,7 +56,7 @@ public class ConversationsArrayAdapter extends ArrayAdapter<Conversation> {
         } else
             holder = (ConversationsArrayAdapter.ViewHolder) convertView.getTag();
 
-        holder.txtConversationName.setText(rowItem.getName());
+        holder.txtConversationName.setText(rowItem.getName().replace(currentUser.getDisplayName(),""));
         holder.txtLastMessage.setText(rowItem.getLastMessage());
         holder.txtLastChattingDate.setText(rowItem.getDateTimeFormatted());
         holder.imageView.setImageResource(R.drawable.testing_image);

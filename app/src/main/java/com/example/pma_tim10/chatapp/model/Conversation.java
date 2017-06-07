@@ -1,5 +1,7 @@
 package com.example.pma_tim10.chatapp.model;
 
+import com.google.firebase.database.Exclude;
+
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -31,6 +33,7 @@ public class Conversation {
         this.timestamp = timestamp;
     }
 
+    @Exclude
     public String getDateTimeFormatted(){
         Date date = new Date(this.timestamp);
         DateFormat formatter = new SimpleDateFormat("HH:mm");

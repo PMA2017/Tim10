@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Dorian on 5/29/2017.
@@ -68,7 +69,7 @@ public class ConversationService implements IConversationService {
 
     @Override
     public void getConversationIdForUserId(final String userId, final IFirebaseCallback callback) {
-        FirebaseDatabase.getInstance().getReference().child(Constants.CHATS).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child(Constants.CHATS).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final List<Conversation> conversations = new ArrayList<Conversation>();
@@ -98,18 +99,20 @@ public class ConversationService implements IConversationService {
     }
 
     @Override
-    public void getConversationUsers(String conversationId,final IFirebaseCallback callback) {
+    public void getConversationUsers(String conversationId, final String currentUserId, final String secondUserId, final IFirebaseCallback callback) {
         FirebaseDatabase.getInstance().getReference().child(Constants.CHATS).child(conversationId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final List<User> usersInChat = new ArrayList<>();
                 final Conversation conversation = dataSnapshot.getValue(Conversation.class);
-                for (String memberId : conversation.getMembers().keySet()){
+                Collection<String> usersIds = conversation != null ? conversation.getMembers().keySet() : new ArrayList<String>(){{add(currentUserId);add(secondUserId);}};
+                final int size = conversation != null ? conversation.getMembers().keySet().size() : 2;
+                for (String memberId : usersIds){
                     userService.getUserDetails(memberId, new IFirebaseCallback() {
                         @Override
                         public void notifyUI(List data) {
                             usersInChat.add((User)data.get(0));
-                            if(usersInChat.size() == conversation.getMembers().keySet().size())
+                            if(usersInChat.size() == size)
                                 callback.notifyUI(usersInChat);
                         }
                     });
@@ -125,14 +128,18 @@ public class ConversationService implements IConversationService {
     }
 
     @Override
-    public void addOrUpdateConversation(String conversationId, final Message message, final Collection<String> usersInChatIds, final IFirebaseCallback callback) {
+    public void addOrUpdateConversation(String conversationId, final Message message, final Map<String,User> usersInChat, final IFirebaseCallback callback) {
         final Conversation conversation = new Conversation();
         conversation.setId(conversationId);
         String lastMessage = message.getSenderName() + ": " + message.getContent();
         conversation.setLastMessage(lastMessage);
         conversation.setTimestamp(System.currentTimeMillis());
+        StringBuilder cName = new StringBuilder();
+        for(User user : usersInChat.values())
+                cName.append(user.getName() + " " + user.getSurname() + " ");
+        conversation.setName(cName.toString());
         Map<String,Object> users = new HashMap<>();
-        for(String userId : usersInChatIds)
+        for(String userId : usersInChat.keySet())
             users.put(userId,true);
         conversation.setMembers(users);
 

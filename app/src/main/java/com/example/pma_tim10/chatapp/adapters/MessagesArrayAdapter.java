@@ -82,7 +82,7 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
         holder.txtMessageDateTime.setText(message.getDateTimeFormatted());
         Bitmap bitmap = MessagesActivity.usersInChat.get(message.getSender()).getUserProfilePhoto();
         if(bitmap != null)
-            holder.ivSenderPhoto.setImageBitmap(bitmap);
+            holder.ivSenderPhoto.setImageBitmap(Utility.getCircleBitmap(bitmap));
     }
 
     @Override
