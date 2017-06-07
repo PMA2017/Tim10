@@ -88,9 +88,23 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        conversationId = conversationId != null ? conversationId : UUID.randomUUID().toString();
+        if(conversationId == null)
+            getConversationId();
+        else
+            populateUsers(conversationId);
 
-        populateUsers(conversationId);
+
+    }
+
+    private void getConversationId() {
+        conversationService.getConversationIdForUserId(secondUserId, new IFirebaseCallback() {
+            @Override
+            public void notifyUI(List data) {
+                Conversation conversation = data.size() > 0 ? (Conversation) data.get(0) : null;
+                conversationId = conversation != null ? conversation.getId() : UUID.randomUUID().toString();
+                populateUsers(conversationId);
+            }
+        });
     }
 
     private void populateUsers(final String conversationId) {
