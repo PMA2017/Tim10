@@ -18,5 +18,8 @@ public interface IConversationService {
 
     void addOrUpdateConversation(String conversationId, final Message message, final Map<String,User> usersInChat, final IFirebaseCallback callback);
 
+    void updateConversationUsers(String conversationId, final Map<String, User> usersInChat, final IFirebaseCallback callback);
+    void updateConversationName(String conversationId, String conversationName, final IFirebaseCallback callback);
+
     void getConversationUsers(String conversationId,String currentUserId, String secondUserId,final IFirebaseCallback callback);
 }

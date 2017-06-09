@@ -152,4 +152,22 @@ public class ConversationService implements IConversationService {
         });
     }
 
+    @Override
+    public void updateConversationUsers(String conversationId,final Map<String, User> usersInChat,final IFirebaseCallback callback) {
+        Map<String,Boolean> convUsers = new HashMap<>();
+        for(String uid : usersInChat.keySet())
+            convUsers.put(uid,true);
+        Task<Void> task = databaseReference.child(Constants.CHATS).child(conversationId).child(Constants.CONVERSATION_FIELD_MEMBERS).setValue(convUsers);
+        task.addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                callback.notifyUI(null);
+            }
+        });
+    }
+
+    @Override
+    public void updateConversationName(String conversationId, String conversationName, IFirebaseCallback callback) {
+
+    }
 }
