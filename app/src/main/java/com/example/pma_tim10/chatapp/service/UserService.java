@@ -148,7 +148,9 @@ public class UserService implements IUserService {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
+                        users.clear();
+                        users.add(user);
+                        callback.notifyUI(users);
                     }
                 });
 

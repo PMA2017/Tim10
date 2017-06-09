@@ -90,6 +90,7 @@ public class User {
         this.online = online;
     }
 
+    @Exclude
     public String getStatus(){
         return isOnline() == true ? "online" : "offline";
     }
@@ -100,6 +101,11 @@ public class User {
 
     public void setUserProfilePhoto(Bitmap userProfilePhoto) {
         this.userProfilePhoto = userProfilePhoto;
+    }
+
+    @Exclude
+    public String getFullName() {
+        return getName() + " " + getSurname();
     }
 
     @Override

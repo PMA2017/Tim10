@@ -105,7 +105,7 @@ public class ConversationService implements IConversationService {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final List<User> usersInChat = new ArrayList<>();
                 final Conversation conversation = dataSnapshot.getValue(Conversation.class);
-                Collection<String> usersIds = conversation != null ? conversation.getMembers().keySet() : new ArrayList<String>(){{add(currentUserId);add(secondUserId);}};
+                Collection<String> usersIds = conversation != null && conversation.getMembers() != null ? conversation.getMembers().keySet() : new ArrayList<String>(){{add(currentUserId);add(secondUserId);}};
                 final int size = conversation != null ? conversation.getMembers().keySet().size() : 2;
                 for (String memberId : usersIds){
                     userService.getUserDetails(memberId, new IFirebaseCallback() {

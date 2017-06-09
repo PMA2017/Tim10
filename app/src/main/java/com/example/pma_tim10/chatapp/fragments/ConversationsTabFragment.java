@@ -58,6 +58,7 @@ public class ConversationsTabFragment extends ListFragment implements AdapterVie
         Conversation conversation = (Conversation)adapterView.getItemAtPosition(i);
         Intent intent = new Intent(getActivity(),MessagesActivity.class);
         intent.putExtra(Constants.IE_CONVERSATION_ID_KEY,conversation.getId());
+        intent.putExtra(Constants.IE_CONVERSATION_NAME,conversation.getName());
         getActivity().startActivity(intent);
         getActivity().finish();
     }

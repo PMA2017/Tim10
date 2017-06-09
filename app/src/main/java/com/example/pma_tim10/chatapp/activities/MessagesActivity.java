@@ -7,6 +7,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -46,6 +48,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
     public static List<Message> messages;
     public static HashMap<String,User> usersInChat;
 
+
     private MessagesArrayAdapter messagesArrayAdapter;
 
     private String secondUserId;
@@ -78,6 +81,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(messagesArrayAdapter);
 
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         messageService = new MessageService();
         conversationService = new ConversationService();
@@ -85,14 +89,13 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 
         secondUserId = getIntent().getStringExtra(Constants.IE_USER_ID_KEY);
         conversationId = getIntent().getStringExtra(Constants.IE_CONVERSATION_ID_KEY);
+        setTitle(getIntent().getStringExtra(Constants.IE_CONVERSATION_NAME).replace(currentUser.getDisplayName(),""));
 
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if(conversationId == null)
             getConversationId();
         else
             populateUsers(conversationId);
-
 
     }
 
@@ -100,8 +103,8 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         conversationService.getConversationIdForUserId(secondUserId, new IFirebaseCallback() {
             @Override
             public void notifyUI(List data) {
-                Conversation conversation = data.size() > 0 ? (Conversation) data.get(0) : null;
-                conversationId = conversation != null ? conversation.getId() : UUID.randomUUID().toString();
+                Conversation c = data.size() > 0 ? (Conversation) data.get(0) : null;
+                conversationId = c != null ? c.getId() : UUID.randomUUID().toString();
                 populateUsers(conversationId);
             }
         });
@@ -197,4 +200,10 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_message, menu);
+        return true;
+    }
 }

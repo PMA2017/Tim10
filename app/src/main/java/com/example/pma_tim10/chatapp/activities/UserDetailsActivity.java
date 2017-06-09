@@ -82,6 +82,8 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
 
         ibtnAddFriend.setOnClickListener(this);
         ibtnOpenChat.setOnClickListener(this);
+        ibtnOpenChat.setClickable(false);
+        ibtnOpenChat.setEnabled(false);
 
         setButtonTag(userId);
         getUsersDetails(userId);
@@ -93,8 +95,14 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
             public void notifyUI(List data) {
                 userProfile = ((List<User>)data).get(0);
                 updateUI(userProfile);
+                enableMessageButton();
             }
         });
+    }
+
+    private void enableMessageButton() {
+        ibtnOpenChat.setClickable(true);
+        ibtnOpenChat.setEnabled(true);
     }
 
     private void setButtonTag(String userId){
@@ -182,6 +190,7 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
         Log.d(TAG,"Going to chat activity");
         Intent intent = new Intent(this,MessagesActivity.class);
         intent.putExtra(Constants.IE_USER_ID_KEY, userId);
+        intent.putExtra(Constants.IE_CONVERSATION_NAME, userProfile.getFullName());
         startActivity(intent);
         finish();
     }
