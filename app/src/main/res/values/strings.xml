@@ -16,5 +16,6 @@
     <string name="new_message">New</string>
     <string name="action_upload_photo">Upload photo</string>
     <string name="action_manage_users">Manage users</string>
+    <string name="facebook_app_id">226706371176212</string>
 
 </resources>
