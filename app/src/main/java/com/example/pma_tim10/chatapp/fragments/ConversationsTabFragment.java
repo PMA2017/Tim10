@@ -23,6 +23,7 @@ import com.example.pma_tim10.chatapp.service.IConversationService;
 import com.example.pma_tim10.chatapp.utils.Constants;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ConversationsTabFragment extends ListFragment implements AdapterView.OnItemClickListener {
@@ -75,6 +76,7 @@ public class ConversationsTabFragment extends ListFragment implements AdapterVie
     private void updateUI(List<Conversation> data){
         conversations.removeAll(conversations);
         conversations.addAll(data);
+        Collections.reverse(conversations);
         conversationsArrayAdapter.notifyDataSetChanged();
     }
 

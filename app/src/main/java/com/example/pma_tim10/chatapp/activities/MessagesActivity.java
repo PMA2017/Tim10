@@ -155,6 +155,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         Intent intent = new Intent(this,MainActivity.class);
         usersInChat = null;
         messages = null;
+        conversationId = null;
         startActivity(intent);
         finish();
     }

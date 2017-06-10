@@ -42,7 +42,7 @@ public class ConversationService implements IConversationService {
 
     @Override
     public void getConversations(final IFirebaseCallback callback) {
-        FirebaseDatabase.getInstance().getReference().child(Constants.CHATS).addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child(Constants.CHATS).orderByChild(Constants.CONVERSATION_FIELD_TIMESTAMP).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final List<Conversation> conversations = new ArrayList<Conversation>();
@@ -153,15 +153,28 @@ public class ConversationService implements IConversationService {
     }
 
     @Override
-    public void updateConversationUsers(String conversationId,final Map<String, User> usersInChat,final IFirebaseCallback callback) {
-        Map<String,Boolean> convUsers = new HashMap<>();
-        for(String uid : usersInChat.keySet())
-            convUsers.put(uid,true);
-        Task<Void> task = databaseReference.child(Constants.CHATS).child(conversationId).child(Constants.CONVERSATION_FIELD_MEMBERS).setValue(convUsers);
-        task.addOnSuccessListener(new OnSuccessListener<Void>() {
+    public void updateConversationUsers(final String conversationId,final Map<String, User> usersInChat,final IFirebaseCallback callback) {
+        databaseReference.child(Constants.CHATS).child(conversationId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onSuccess(Void aVoid) {
-                callback.notifyUI(null);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    //Key does not exist
+                    Map<String,Boolean> convUsers = new HashMap<>();
+                    for(String uid : usersInChat.keySet())
+                        convUsers.put(uid,true);
+                    Task<Void> task = databaseReference.child(Constants.CHATS).child(conversationId).child(Constants.CONVERSATION_FIELD_MEMBERS).setValue(convUsers);
+                    task.addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            callback.notifyUI(null);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }
