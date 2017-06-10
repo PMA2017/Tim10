@@ -12,6 +12,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.R;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -25,6 +31,8 @@ public class EmailPasswordActivity extends AppCompatActivity implements
 
     private EditText mEmailField;
     private EditText mPasswordField;
+    private LoginButton mLoginButton;
+    private CallbackManager mCallbackManager;
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
@@ -39,16 +47,42 @@ public class EmailPasswordActivity extends AppCompatActivity implements
         // Views
         mEmailField = (EditText) findViewById(R.id.et_email);
         mPasswordField = (EditText) findViewById(R.id.et_password);
+        mLoginButton = (LoginButton) findViewById(R.id.fb_login_btn);
 
         // Buttons
         findViewById(R.id.btn_sign_in).setOnClickListener(this);
         findViewById(R.id.btn_sign_up).setOnClickListener(this);
-        findViewById(R.id.btn_fb_log_in).setOnClickListener(this);
+        //findViewById(R.id.btn_fb_log_in).setOnClickListener(this);
         findViewById(R.id.btn_google_log_in).setOnClickListener(this);
 
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
+        mCallbackManager = CallbackManager.Factory.create();
         // [END initialize_auth]
+
+        mLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mCallbackManager.onActivityResult(requestCode,resultCode,data);
     }
 
     // [START on_start_check_user]
@@ -121,7 +155,7 @@ public class EmailPasswordActivity extends AppCompatActivity implements
             goToSignUpActivity();
         } else if (i == R.id.btn_sign_in) {
             signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (i == R.id.btn_fb_log_in) {
+        //} else if (i == R.id.btn_fb_log_in) {
             //TO-DO
         } else if (i == R.id.btn_google_log_in) {
             //TO-DO
