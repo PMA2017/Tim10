@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.activities.MessagesActivity;
 import com.example.pma_tim10.chatapp.model.Message;
+import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.utils.Utility;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -74,8 +75,9 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
         Message message = messages.get(position);
         holder.txtMessageText.setText(message.getContent());
         holder.txtMessageDateTime.setText(message.getDateTimeFormatted());
-        Bitmap bitmap = MessagesActivity.usersInChat.get(message.getSender()).getUserProfilePhoto();
-        if(bitmap != null)
+        User u = MessagesActivity.usersInChat.get(message.getSender());
+        Bitmap bitmap = u != null ? u.getUserProfilePhoto() : null;
+        if(u != null && bitmap != null)
             holder.ivSenderPhoto.setImageBitmap(Utility.getCircleBitmap(bitmap));
     }
 

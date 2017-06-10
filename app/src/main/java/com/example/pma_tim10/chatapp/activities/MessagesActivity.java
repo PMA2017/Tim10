@@ -1,5 +1,6 @@
 package com.example.pma_tim10.chatapp.activities;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,13 +10,16 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.adapters.MessagesArrayAdapter;
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
+import com.example.pma_tim10.chatapp.fragments.ManageUsersDialogFragment;
 import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.Message;
 import com.example.pma_tim10.chatapp.model.User;
@@ -52,7 +56,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
     private MessagesArrayAdapter messagesArrayAdapter;
 
     private String secondUserId;
-    private String conversationId;
+    public static String conversationId;
 
     private IMessageService messageService;
     private IConversationService conversationService;
@@ -65,6 +69,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
     private EditText etNewMessageText;
     private ImageButton btnSendMessage;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +78,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         etNewMessageText = (EditText) findViewById(R.id.text_field_for_message);
         btnSendMessage = (ImageButton) findViewById(R.id.send_message_button);
         btnSendMessage.setOnClickListener(this);
+
 
         messages = new ArrayList<>();
         usersInChat = new HashMap<>();
@@ -168,6 +174,21 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
                 sendMessage();
                 break;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_manage_users:
+                manageUsers();
+        }
+        return true;
+    }
+
+    private void manageUsers() {
+        FragmentManager fm = getFragmentManager();
+        ManageUsersDialogFragment mudf = new ManageUsersDialogFragment();
+        mudf.show(fm,"ManageUsersFragment");
     }
 
     private void sendMessage() {

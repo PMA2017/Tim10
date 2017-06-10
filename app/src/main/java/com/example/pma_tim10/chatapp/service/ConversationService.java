@@ -167,7 +167,13 @@ public class ConversationService implements IConversationService {
     }
 
     @Override
-    public void updateConversationName(String conversationId, String conversationName, IFirebaseCallback callback) {
-
+    public void updateConversationName(String conversationId, String conversationName,final IFirebaseCallback callback) {
+        Task<Void> task = databaseReference.child(Constants.CHATS).child(conversationId).child(Constants.CONVERSATION_FIELD_NAME).setValue(conversationName);
+        task.addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                callback.notifyUI(null);
+            }
+        });
     }
 }
