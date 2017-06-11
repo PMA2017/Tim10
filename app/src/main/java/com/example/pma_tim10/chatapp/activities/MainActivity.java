@@ -30,7 +30,9 @@ import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.receivers.NetworkConnectivityReceiver;
 import com.example.pma_tim10.chatapp.service.IUserService;
 import com.example.pma_tim10.chatapp.service.UserService;
+import com.example.pma_tim10.chatapp.utils.Constants;
 import com.example.pma_tim10.chatapp.utils.Utility;
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -121,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void signOut() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser().getProviders().contains(Constants.FACEBOOK_PROVIDER_ID));
+            LoginManager.getInstance().logOut();
         auth.signOut();
         userService.setOffline();
         goToLoginActivity();

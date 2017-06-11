@@ -32,4 +32,15 @@ public class AuthService implements IAuthService {
             return false;
         }
     }
+
+    @Override
+    public boolean registerFacebookUser(String uid, User user) {
+        try{
+            databaseReference.child(Constants.USERS).child(uid).setValue(user);
+            return true;
+        }catch (Exception e)
+        {
+            return false;
+        }
+    }
 }

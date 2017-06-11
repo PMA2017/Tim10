@@ -40,12 +40,14 @@ public class UserService implements IUserService {
     private FirebaseUser currentUser;
     private FirebaseStorage storage;
     private StorageReference storageReference;
+    private IAuthService authService;
 
     public UserService() {
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
         this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
         this.storage = FirebaseStorage.getInstance();
         this.storageReference = storage.getReference();
+        this.authService = new AuthService();
     }
 
     @Override
@@ -57,6 +59,7 @@ public class UserService implements IUserService {
                 for (DataSnapshot ds: dataSnapshot.getChildren()) {
                     User user = ds.getValue(User.class);
                     // exclude current user
+                    if (user != null)
                     if(currentUser != null & user.getUid().equals(currentUser.getUid()))
                         continue;
                     // TO-DO : find and exclude friends
@@ -241,4 +244,22 @@ public class UserService implements IUserService {
         }
     }
 
+    @Override
+    public void checkUserByUid(final String uid, final User user, final IFirebaseCallback callback) {
+            databaseReference.getDatabase().getReference().child(Constants.USERS).child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.exists()) {
+                        authService.registerUser(uid,user);
+                    }
+
+                    callback.notifyUI(null);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+    }
 }
