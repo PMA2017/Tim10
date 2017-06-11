@@ -9,5 +9,6 @@ import com.example.pma_tim10.chatapp.model.User;
 public interface IAuthService {
 
     boolean registerUser(String uid, User user);
+    boolean registerFacebookUser(String uid, User user);
 
 }
