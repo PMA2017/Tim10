@@ -54,15 +54,18 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
             ivSenderPhoto = (ImageView) view.findViewById(R.id.sender_photo);
             txtMessageText = (TextView) view.findViewById(R.id.message_text);
             txtMessageDateTime = (TextView) view.findViewById(R.id.message_datetime);
+        }
+
+        public void addMessageListenerLocation(final double longitude, final double latitude){
             txtMessageText.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    Log.d("","aasd");
-                    ((MessagesActivity)activity).showMapDialog(45.267135,19.833550);
+                    ((MessagesActivity)activity).showMapDialog(latitude,longitude);
                     return false;
                 }
             });
         }
+
     }
 
     @Override
@@ -75,7 +78,6 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
 
         return new MessageViewHolder(view);
     }
-
 
     @Override
     public int getItemViewType(int position) {
@@ -91,6 +93,7 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
         Message message = messages.get(position);
         holder.txtMessageText.setText(message.getContent());
         holder.txtMessageDateTime.setText(message.getDateTimeFormatted());
+        holder.addMessageListenerLocation(message.getLongitude(),message.getLatitude());
         User u = MessagesActivity.usersInChat.get(message.getSender());
         Bitmap bitmap = u != null ? u.getUserProfilePhoto() : null;
         if(u != null && bitmap != null)

@@ -3,7 +3,9 @@ package com.example.pma_tim10.chatapp.activities;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +28,7 @@ import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.Message;
 import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.service.ConversationService;
+import com.example.pma_tim10.chatapp.service.GPSTracker;
 import com.example.pma_tim10.chatapp.service.IConversationService;
 import com.example.pma_tim10.chatapp.service.IMessageService;
 import com.example.pma_tim10.chatapp.service.IUserService;
@@ -77,6 +80,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
     private EditText etNewMessageText;
     private ImageButton btnSendMessage;
 
+    private GPSTracker gpsTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +104,8 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         messageService = new MessageService();
         conversationService = new ConversationService();
         userService = new UserService();
+
+        gpsTracker = new GPSTracker(this);
 
         secondUserId = getIntent().getStringExtra(Constants.IE_USER_ID_KEY);
         conversationId = getIntent().getStringExtra(Constants.IE_CONVERSATION_ID_KEY);
@@ -207,11 +213,27 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
             return;
         }
 
+        double latitude;
+        double longitude;
+
         final Message newMsg = new Message();
         newMsg.setContent(msgText);
         newMsg.setTimestamp(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis());
         newMsg.setSenderName(currentUser.getDisplayName());
         newMsg.setSender(currentUser.getUid());
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isLocation = prefs.getBoolean(Constants.LOCATION_STATE,true);
+        if (isLocation) {
+            if (gpsTracker.canGetLocation()) {
+                longitude = gpsTracker.getLongitude();
+                latitude = gpsTracker.getLatitude();
+                newMsg.setLatitude(latitude);
+                newMsg.setLongitude(longitude);
+            } else
+                gpsTracker.showSettingsAlert();
+        }
+
         messageService.sendMessage(newMsg, usersInChat , conversationId, new IFirebaseCallback() {
             @Override
             public void notifyUI(List data) {
