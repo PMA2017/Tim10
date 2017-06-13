@@ -105,7 +105,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         conversationService = new ConversationService();
         userService = new UserService();
 
-        gpsTracker = new GPSTracker(this);
+        gpsTracker = new GPSTracker(this,this);
 
         secondUserId = getIntent().getStringExtra(Constants.IE_USER_ID_KEY);
         conversationId = getIntent().getStringExtra(Constants.IE_CONVERSATION_ID_KEY);

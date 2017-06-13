@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
 import com.example.pma_tim10.chatapp.model.User;
+import com.example.pma_tim10.chatapp.service.GPSTracker;
 import com.example.pma_tim10.chatapp.service.IAuthService;
 import com.example.pma_tim10.chatapp.service.UserService;
 import com.facebook.AccessToken;
@@ -51,6 +52,8 @@ public class EmailPasswordActivity extends AppCompatActivity implements
 
     private UserService userService;
 
+    private GPSTracker gpsTracker;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +77,8 @@ public class EmailPasswordActivity extends AppCompatActivity implements
 
         userService = new UserService();
 
+        gpsTracker = new GPSTracker(this,this);
+
         mLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -90,6 +95,8 @@ public class EmailPasswordActivity extends AppCompatActivity implements
                 Log.e(TAG,"Error on facebook login");
             }
         });
+
+        gpsTracker.showSettingsAlert();
 
     }
 
