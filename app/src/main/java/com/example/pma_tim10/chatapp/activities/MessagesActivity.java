@@ -1,10 +1,10 @@
 package com.example.pma_tim10.chatapp.activities;
 
+import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -30,12 +32,18 @@ import com.example.pma_tim10.chatapp.service.IUserService;
 import com.example.pma_tim10.chatapp.service.MessageService;
 import com.example.pma_tim10.chatapp.service.UserService;
 import com.example.pma_tim10.chatapp.utils.Constants;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
@@ -82,7 +90,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 
         messages = new ArrayList<>();
         usersInChat = new HashMap<>();
-        messagesArrayAdapter = new MessagesArrayAdapter(messages);
+        messagesArrayAdapter = new MessagesArrayAdapter(messages, this);
         recyclerView = (RecyclerView) findViewById(R.id.message_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(messagesArrayAdapter);
@@ -227,5 +235,43 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_message, menu);
         return true;
+    }
+
+    public void showMapDialog(final double latitude, final double longitude) {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        dialog.setContentView(R.layout.dialogmap);
+
+        GoogleMap googleMap;
+
+
+        MapView mMapView = (MapView) dialog.findViewById(R.id.mapView);
+        MapsInitializer.initialize(this);
+
+        mMapView = (MapView) dialog.findViewById(R.id.mapView);
+        mMapView.onCreate(dialog.onSaveInstanceState());
+        mMapView.onResume();// needed to get the map to display immediately
+        mMapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                LatLng posisiabsen = new LatLng(latitude, longitude);
+                googleMap.addMarker(new MarkerOptions().position(posisiabsen).title("Yout title"));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(posisiabsen));
+                googleMap.getUiSettings().setZoomControlsEnabled(true);
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+            }
+        });
+
+        Button dialogButton = (Button) dialog.findViewById(R.id.cancel_map_btn);
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+
     }
 }

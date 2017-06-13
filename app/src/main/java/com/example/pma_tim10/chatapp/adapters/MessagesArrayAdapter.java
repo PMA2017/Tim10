@@ -1,7 +1,10 @@
 package com.example.pma_tim10.chatapp.adapters;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,13 +33,18 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
     private final int MSG_SENT = 1;
     private final int MSG_RECEIVED = 2;
 
-    public MessagesArrayAdapter(List<Message> msgs){
+    private Context context;
+
+    Activity activity;
+
+    public MessagesArrayAdapter(List<Message> msgs, Activity activity){
         this.messages = msgs;
         this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        this.activity = activity;
     }
 
 
-    public class MessageViewHolder extends RecyclerView.ViewHolder {
+    public class MessageViewHolder extends RecyclerView.ViewHolder{
         public ImageView ivSenderPhoto;
         public TextView txtMessageText;
         public TextView txtMessageDateTime;
@@ -46,6 +54,14 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
             ivSenderPhoto = (ImageView) view.findViewById(R.id.sender_photo);
             txtMessageText = (TextView) view.findViewById(R.id.message_text);
             txtMessageDateTime = (TextView) view.findViewById(R.id.message_datetime);
+            txtMessageText.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    Log.d("","aasd");
+                    ((MessagesActivity)activity).showMapDialog(45.267135,19.833550);
+                    return false;
+                }
+            });
         }
     }
 

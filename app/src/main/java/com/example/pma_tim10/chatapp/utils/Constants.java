@@ -32,4 +32,5 @@ public class Constants {
     public static final String IE_CONVERSATION_NAME = "conversationname";
 
     public static final String FACEBOOK_PROVIDER_ID = "facebook.com";
+    public static final String LOCATION_STATE = "locationstate";
 }
