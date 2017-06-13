@@ -1,6 +1,7 @@
 package com.example.pma_tim10.chatapp.service;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
@@ -34,6 +35,8 @@ public class GPSTracker extends Service implements LocationListener{
     // flag for GPS status
     boolean canGetLocation = false;
 
+    private Activity activity;
+
     Location location; // location
     double latitude; // latitude
     double longitude; // longitude
@@ -47,8 +50,9 @@ public class GPSTracker extends Service implements LocationListener{
     // Declaring a Location Manager
     protected LocationManager locationManager;
 
-    public GPSTracker(Context context) {
+    public GPSTracker(Context context, Activity activity) {
         this.mContext = context;
+        this.activity = activity;
         getLocation();
     }
 
@@ -68,40 +72,48 @@ public class GPSTracker extends Service implements LocationListener{
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // no network provider is enabled
             } else {
-                this.canGetLocation = true;
+
+                if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                    this.canGetLocation = true;
                 // First get location from Network Provider
                 if (isNetworkEnabled) {
+                    try {
                         locationManager.requestLocationUpdates(
                                 LocationManager.NETWORK_PROVIDER,
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                    Log.d("Network", "Network");
+                        Log.d("Network", "Network");
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
+
+                    }
                     if (locationManager != null) {
-                            location = locationManager
-                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                            if (location != null) {
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
-                            }
+                        location = locationManager
+                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        if (location != null) {
+                            latitude = location.getLatitude();
+                            longitude = location.getLongitude();
+                        }
                     }
                 }
                 // if GPS Enabled get lat/long using GPS Services
                 if (isGPSEnabled) {
                     if (location == null) {
-                            locationManager.requestLocationUpdates(
-                                    LocationManager.GPS_PROVIDER,
-                                    MIN_TIME_BW_UPDATES,
-                                    MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                        locationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER,
+                                MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
                         Log.d("GPS Enabled", "GPS Enabled");
                         if (locationManager != null) {
-                                location = locationManager
-                                        .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            location = locationManager
+                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
                             if (location != null) {
                                 latitude = location.getLatitude();
                                 longitude = location.getLongitude();
                             }
                         }
                     }
+                }
                 }
             }
 
