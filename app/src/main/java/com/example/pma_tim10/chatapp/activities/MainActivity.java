@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id){
             case R.id.action_settings:
-                return true;
+                goToSettingsActivity();
             case R.id.action_upload_photo:
                 selectImage();
                 break;
@@ -119,6 +119,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void goToSettingsActivity() {
+        Intent intent = new Intent(this,SettingsActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void signOut() {
