@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.example.pma_tim10.chatapp.ChatApp;
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.adapters.MessagesArrayAdapter;
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
@@ -95,7 +96,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 
         secondUserId = getIntent().getStringExtra(Constants.IE_USER_ID_KEY);
         conversationId = getIntent().getStringExtra(Constants.IE_CONVERSATION_ID_KEY);
-        setTitle(getIntent().getStringExtra(Constants.IE_CONVERSATION_NAME).replace(currentUser.getDisplayName(),""));
+        //setTitle(getIntent().getStringExtra(Constants.IE_CONVERSATION_NAME).replace(currentUser.getDisplayName(),""));
 
 
         if(conversationId == null)
@@ -154,7 +155,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         Log.d(TAG,"Going to main activity");
         Intent intent = new Intent(this,MainActivity.class);
         usersInChat = null;
-        messages = null;
+        messages.clear();
         conversationId = null;
         startActivity(intent);
         finish();
@@ -227,5 +228,17 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_message, menu);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ChatApp.setChatActivityOpen(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ChatApp.setChatActivityOpen(false);
     }
 }

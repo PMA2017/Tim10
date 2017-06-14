@@ -4,6 +4,7 @@ import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
 import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.Message;
 import com.example.pma_tim10.chatapp.model.User;
+import com.example.pma_tim10.chatapp.notifications.FcmNotificationBuilder;
 import com.example.pma_tim10.chatapp.utils.Constants;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,15 +59,29 @@ public class MessageService implements IMessageService {
 
     @Override
     public void sendMessage(final Message message, final Map<String,User> usersInChat, final String conversationId, final IFirebaseCallback callback) {
+        final User current = usersInChat.get(FirebaseAuth.getInstance().getCurrentUser().getUid());
         conversationService.addOrUpdateConversation(conversationId,message,usersInChat, new IFirebaseCallback() {
             @Override
             public void notifyUI(List data) {
-                Conversation conversation = (Conversation) data.get(0);
+                final Conversation conversation = (Conversation) data.get(0);
                 DatabaseReference tempRef = FirebaseDatabase.getInstance().getReference().child(Constants.MESSAGES).child(conversation.getId()).push();
                 message.setId(tempRef.getKey());
                 tempRef.setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        // send notifications to all users
+                        for(User u : usersInChat.values())
+                            if(!u.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+                                FcmNotificationBuilder.initialize()
+                                        .title(current.getFullName())
+                                        .message(message.getContent())
+                                        .username(current.getFullName())
+                                        .uid(u.getUid())
+                                        .firebaseToken(current.getFcmtoken())
+                                        .conversationId(conversationId)
+                                        .conversationName(conversation.getName())
+                                        .receiverFirebaseToken(u.getFcmtoken())
+                                        .send();
                         callback.notifyUI(null);
                     }
                 });

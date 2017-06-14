@@ -17,6 +17,7 @@ public class User {
     private String photoURL;
     private String aboutMe;
     private Boolean online;
+    private String fcmtoken;
 
     @Exclude
     private Bitmap userProfilePhoto;
@@ -24,7 +25,7 @@ public class User {
     public User() {
     }
 
-    public User(String uid, String email, String name, String surname, String photoURL, String aboutMe, Boolean online) {
+    public User(String uid, String email, String name, String surname, String photoURL, String aboutMe, Boolean online, String fcmtoken) {
         this.uid = uid;
         this.email = email;
         this.name = name;
@@ -32,6 +33,15 @@ public class User {
         this.photoURL = photoURL;
         this.aboutMe = aboutMe;
         this.online = online;
+        this.fcmtoken = fcmtoken;
+    }
+
+    public String getFcmtoken() {
+        return fcmtoken;
+    }
+
+    public void setFcmtoken(String fcmtoken) {
+        this.fcmtoken = fcmtoken;
     }
 
     public String getUid() {

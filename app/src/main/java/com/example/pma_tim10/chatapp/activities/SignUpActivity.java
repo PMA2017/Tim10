@@ -17,6 +17,8 @@ import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.service.IAuthService;
 import com.example.pma_tim10.chatapp.service.AuthService;
+import com.example.pma_tim10.chatapp.utils.Constants;
+import com.example.pma_tim10.chatapp.utils.SharedPrefUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -121,6 +123,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         newUser.setName(nameField.getText().toString());
         newUser.setSurname(surnameField.getText().toString());
         newUser.setEmail(emailField.getText().toString());
+        newUser.setFcmtoken(new SharedPrefUtil(getApplicationContext()).getString(Constants.USER_FCM_TOKEN_FIELD));
 
         // [START create_user_with_email]
         mAuth.createUserWithEmailAndPassword(emailField.getText().toString(), passwordField.getText().toString())

@@ -21,4 +21,6 @@ public interface IUserService {
     void setOffline();
 
     void uploadPhoto(Bitmap bitmap);
+
+    void setFcmToken(final String token);
 }
