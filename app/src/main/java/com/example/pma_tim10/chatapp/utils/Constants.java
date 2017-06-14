@@ -24,6 +24,8 @@ public class Constants {
 
     // other
     public static final String USER_ONLINE_FIELD = "online";
+    public static final String USER_FCM_TOKEN_FIELD = "fcmtoken";
+
     public static final String CONVERSATION_ID_PARAM = "conversationId";
     public static final String USERS_IN_CHAT = "usersInChat";
     public static final String USER_PROFILE_PHOTO_PATH = "profile_photos/";

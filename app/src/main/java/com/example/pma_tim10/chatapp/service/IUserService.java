@@ -24,5 +24,9 @@ public interface IUserService {
 
     void uploadPhoto(Bitmap bitmap);
 
+
     void checkUserByUid(String uid, User user, IFirebaseCallback callback);
+
+    void setFcmToken(final String token);
+
 }

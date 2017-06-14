@@ -262,4 +262,14 @@ public class UserService implements IUserService {
                 }
             });
     }
+
+    public void setFcmToken(final String token) {
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child(Constants.USERS)
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child(Constants.USER_FCM_TOKEN_FIELD)
+                .setValue(token);
+    }
+
 }

@@ -31,6 +31,7 @@ import com.example.pma_tim10.chatapp.receivers.NetworkConnectivityReceiver;
 import com.example.pma_tim10.chatapp.service.IUserService;
 import com.example.pma_tim10.chatapp.service.UserService;
 import com.example.pma_tim10.chatapp.utils.Constants;
+import com.example.pma_tim10.chatapp.utils.SharedPrefUtil;
 import com.example.pma_tim10.chatapp.utils.Utility;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         // set this user online
         userService = new UserService();
         userService.setOnline();
-
+        userService.setFcmToken(new SharedPrefUtil(getApplicationContext()).getString(Constants.USER_FCM_TOKEN_FIELD));
     }
 
 
