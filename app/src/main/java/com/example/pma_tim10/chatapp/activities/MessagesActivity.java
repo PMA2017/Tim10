@@ -98,6 +98,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         conversationId = getIntent().getStringExtra(Constants.IE_CONVERSATION_ID_KEY);
 
         initConversation();
+        initConversationUsers();
     }
 
     private void bindViews() {
@@ -129,19 +130,20 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
             public void notifyUI(List data) {
                 mConversation = (Conversation) data.get(0);
                 setTitle(mConversation.getName().replace(currentUser.getDisplayName(),""));
-                initConversationUsers();
+                //initConversationUsers();
             }
         });
     }
 
     private void initConversationUsers() {
-        conversationService.getConversationUsers(conversationId, new IFirebaseCallback() {
-            @Override
-            public void notifyUI(List data) {
-                initUsers((List<User>)data);
-                populateMessages(conversationId);
-            }
-        });
+        if(mUsersInChat.size() == 0 && conversationId != null)
+            conversationService.getConversationUsers(conversationId, new IFirebaseCallback() {
+                @Override
+                public void notifyUI(List data) {
+                    initUsers((List<User>)data);
+                    populateMessages(conversationId);
+                }
+            });
     }
 
     private void initUsers(List<User> users) {
@@ -219,6 +221,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         newMsg.setContent(msgText);
         newMsg.setSenderName(currentUser.getDisplayName());
         newMsg.setSender(currentUser.getUid());
+        etNewMessageText.setText("");
 
 //        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 //        boolean isLocation = prefs.getBoolean(Constants.LOCATION_STATE,true);
@@ -246,7 +249,6 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
                             break;
                         }
                 }
-                etNewMessageText.setText("");
             }
         });
     }
