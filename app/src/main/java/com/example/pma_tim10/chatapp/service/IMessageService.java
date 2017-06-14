@@ -16,6 +16,6 @@ import java.util.Map;
 public interface IMessageService {
 
     void getMessages(String conversationId, IFirebaseCallback callback);
-    void sendMessage(final Message message, final Map<String,User> usersInChat, final String conversationId, final IFirebaseCallback callback);
+    void sendMessage(final String conversationId, final Message message, final Map<String,User> usersInChat, final IFirebaseCallback callback);
 
 }

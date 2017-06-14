@@ -14,8 +14,6 @@ import java.util.TimeZone;
  */
 
 public class Message {
-    private String id;
-    private Long timestamp;
     private String content;
     private Double longitude;
     private Double latitude;
@@ -30,9 +28,7 @@ public class Message {
         this.timestampCreated = timestampNow;
     }
 
-    public Message(String id, Long timestamp, String content, Double longitude, Double latitude, String sender, String senderName) {
-        this.id = id;
-        this.timestamp = timestamp;
+    public Message(String content, Double longitude, Double latitude, String sender, String senderName) {
         this.content = content;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -60,22 +56,6 @@ public class Message {
     @Exclude
     public long getTimestampCreatedLong(){
         return (long)timestampCreated.get("timestamp");
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Long timestamp) {
-        this.timestamp = timestamp;
     }
 
     public String getContent() {

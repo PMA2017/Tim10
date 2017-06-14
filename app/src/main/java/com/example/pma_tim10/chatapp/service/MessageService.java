@@ -7,6 +7,7 @@ import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.notifications.FcmNotificationBuilder;
 import com.example.pma_tim10.chatapp.utils.Constants;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +40,7 @@ public class MessageService implements IMessageService {
 
     @Override
     public void getMessages(String conversationId, final IFirebaseCallback callback) {
-        FirebaseDatabase.getInstance().getReference().child(Constants.MESSAGES).child(conversationId).addValueEventListener(new ValueEventListener() {
+        databaseReference.child(Constants.MESSAGES).child(conversationId).orderByChild(Constants.MESSAGE_FIELD_TIMESTAMP).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Message> messages = new ArrayList<Message>();
@@ -58,17 +59,16 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void sendMessage(final Message message, final Map<String,User> usersInChat, final String conversationId, final IFirebaseCallback callback) {
+    public void sendMessage(final String conversationId, final Message message, final Map<String,User> usersInChat, final IFirebaseCallback callback) {
         final User current = usersInChat.get(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        conversationService.addOrUpdateConversation(conversationId,message,usersInChat, new IFirebaseCallback() {
+        Task<Void> task = databaseReference.child(Constants.MESSAGES).child(conversationId).push().setValue(message);
+        task.addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void notifyUI(List data) {
-                final Conversation conversation = (Conversation) data.get(0);
-                DatabaseReference tempRef = FirebaseDatabase.getInstance().getReference().child(Constants.MESSAGES).child(conversation.getId()).push();
-                message.setId(tempRef.getKey());
-                tempRef.setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
+            public void onSuccess(Void aVoid) {
+                // update conversation timestamp and last message
+                conversationService.updateConversationLastMessageAndTimestamp(conversationId, message, new IFirebaseCallback() {
                     @Override
-                    public void onSuccess(Void aVoid) {
+                    public void notifyUI(List data) {
                         // send notifications to all users
                         for(User u : usersInChat.values())
                             if(!u.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
@@ -79,7 +79,6 @@ public class MessageService implements IMessageService {
                                         .uid(u.getUid())
                                         .firebaseToken(current.getFcmtoken())
                                         .conversationId(conversationId)
-                                        .conversationName(conversation.getName())
                                         .receiverFirebaseToken(u.getFcmtoken())
                                         .send();
                         callback.notifyUI(null);

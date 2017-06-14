@@ -1,6 +1,7 @@
 package com.example.pma_tim10.chatapp.service;
 
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
+import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.Message;
 import com.example.pma_tim10.chatapp.model.User;
 
@@ -16,10 +17,17 @@ public interface IConversationService {
     void getConversations(final IFirebaseCallback callback);
     void getConversationIdForUserId(String userId, final IFirebaseCallback callback);
 
-    void addOrUpdateConversation(String conversationId, final Message message, final Map<String,User> usersInChat, final IFirebaseCallback callback);
+
+    void createConversation(final Conversation conversation, final IFirebaseCallback callback);
+    void deleteConversation(final String conversationId, final IFirebaseCallback callback);
+
+    void getConversation(final String conversationId, final IFirebaseCallback callback);
+
+    void updateConversationLastMessageAndTimestamp(final String conversationId, final Message message, final IFirebaseCallback callback);
+    void updateUserStatusInConversation(final String conversationId, final String userId, final IFirebaseCallback callback);
 
     void updateConversationUsers(String conversationId, final Map<String, User> usersInChat, final IFirebaseCallback callback);
     void updateConversationName(String conversationId, String conversationName, final IFirebaseCallback callback);
 
-    void getConversationUsers(String conversationId,String currentUserId, String secondUserId,final IFirebaseCallback callback);
+    void getConversationUsers(String conversationId, final IFirebaseCallback callback);
 }

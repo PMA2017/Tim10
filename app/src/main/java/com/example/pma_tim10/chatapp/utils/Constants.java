@@ -19,9 +19,10 @@ public class Constants {
     public static final String CONVERSATION_FIELD_ID = "id";
     public static final String CONVERSATION_FIELD_MEMBERS = "members";
     public static final String CONVERSATION_FIELD_LAST_MESSAGE = "lastMessage";
-    public static final String CONVERSATION_FIELD_TIMESTAMP = "timestamp";
+    public static final String CONVERSATION_FIELD_TIMESTAMP = "timestampCreated/timestamp";
     public static final String CONVERSATION_FIELD_NAME = "name";
 
+    public static final String MESSAGE_FIELD_TIMESTAMP = "timestampCreated/timestamp";
     // other
     public static final String USER_ONLINE_FIELD = "online";
     public static final String USER_FCM_TOKEN_FIELD = "fcmtoken";

@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Daniel on 6/7/2017.
@@ -28,6 +29,7 @@ import java.util.List;
 public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdapter.MessageViewHolder> {
 
     private List<Message> messages;
+    private Map<String, User> usersInChat;
     private FirebaseUser currentUser;
 
     private final int MSG_SENT = 1;
@@ -37,8 +39,9 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
 
     Activity activity;
 
-    public MessagesArrayAdapter(List<Message> msgs, Activity activity){
+    public MessagesArrayAdapter(List<Message> msgs, Map<String,User> usersInChat, Activity activity){
         this.messages = msgs;
+        this.usersInChat = usersInChat;
         this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
         this.activity = activity;
     }
@@ -93,8 +96,8 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
         Message message = messages.get(position);
         holder.txtMessageText.setText(message.getContent());
         holder.txtMessageDateTime.setText(message.getDateTimeFormatted());
-        holder.addMessageListenerLocation(message.getLongitude(),message.getLatitude());
-        User u = MessagesActivity.usersInChat.get(message.getSender());
+        //holder.addMessageListenerLocation(message.getLongitude(),message.getLatitude());
+        User u = usersInChat.get(message.getSender());
         Bitmap bitmap = u != null ? u.getUserProfilePhoto() : null;
         if(u != null && bitmap != null)
             holder.ivSenderPhoto.setImageBitmap(Utility.getCircleBitmap(bitmap));

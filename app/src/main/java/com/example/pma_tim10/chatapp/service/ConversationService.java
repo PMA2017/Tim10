@@ -15,6 +15,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -52,7 +53,8 @@ public class ConversationService implements IConversationService {
 
                     //current member conversations
                     if (conversation.getMembers() != null)
-                        if (conversation.getMembers().containsKey(currentUser.getUid()))
+                        if (conversation.getMembers().containsKey(currentUser.getUid()) &&
+                                conversation.getMembers().get(currentUser.getUid()) == true)
                             conversations.add(conversation);
                 }
 
@@ -99,25 +101,22 @@ public class ConversationService implements IConversationService {
     }
 
     @Override
-    public void getConversationUsers(String conversationId, final String currentUserId, final String secondUserId, final IFirebaseCallback callback) {
+    public void getConversationUsers(String conversationId, final IFirebaseCallback callback) {
         FirebaseDatabase.getInstance().getReference().child(Constants.CHATS).child(conversationId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                final List<User> usersInChat = new ArrayList<>();
+                final List<User> users = new ArrayList<>();
                 final Conversation conversation = dataSnapshot.getValue(Conversation.class);
-                Collection<String> usersIds = conversation != null && conversation.getMembers() != null ? conversation.getMembers().keySet() : new ArrayList<String>(){{add(currentUserId);add(secondUserId);}};
-                final int size = conversation != null ? conversation.getMembers().keySet().size() : 2;
-                for (String memberId : usersIds){
-                    userService.getUserDetails(memberId, new IFirebaseCallback() {
+                for(String userId : conversation.getMembers().keySet()){
+                    userService.getUserDetails(userId, new IFirebaseCallback() {
                         @Override
                         public void notifyUI(List data) {
-                            usersInChat.add((User)data.get(0));
-                            if(usersInChat.size() == size)
-                                callback.notifyUI(usersInChat);
+                            users.add((User)data.get(0));
+                            if(users.size() == conversation.getMembers().size())
+                                callback.notifyUI(users);
                         }
                     });
                 }
-
             }
 
             @Override
@@ -128,26 +127,72 @@ public class ConversationService implements IConversationService {
     }
 
     @Override
-    public void addOrUpdateConversation(String conversationId, final Message message, final Map<String,User> usersInChat, final IFirebaseCallback callback) {
-        final Conversation conversation = new Conversation();
-        conversation.setId(conversationId);
-        String lastMessage = message.getSenderName() + ": " + message.getContent();
-        conversation.setLastMessage(lastMessage);
-        conversation.setTimestamp(message.getTimestamp());
-        StringBuilder cName = new StringBuilder();
-        for(User user : usersInChat.values())
-                cName.append(user.getName() + " " + user.getSurname() + " ");
-        conversation.setName(cName.toString());
-        Map<String,Object> users = new HashMap<>();
-        for(String userId : usersInChat.keySet())
-            users.put(userId,true);
-        conversation.setMembers(users);
-
-        Task<Void> task = databaseReference.child(Constants.CHATS).child(conversationId).setValue(conversation);
+    public void createConversation(final Conversation conversation, final IFirebaseCallback callback) {
+        Task<Void> task = databaseReference.child(Constants.CHATS).child(conversation.getId()).setValue(conversation);
         task.addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                callback.notifyUI(new ArrayList(){{add(conversation);}});
+                callback.notifyUI(null);
+            }
+        });
+    }
+
+    @Override
+    public void deleteConversation(final String conversationId, final IFirebaseCallback callback) {
+        databaseReference.child(Constants.CHATS).child(conversationId).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                databaseReference.child(Constants.MESSAGES).child(conversationId).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        callback.notifyUI(null);
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    public void updateConversationLastMessageAndTimestamp(final String conversationId, final Message message, final IFirebaseCallback callback) {
+        Map updateConversation = new HashMap();
+        String lastMessage = message.getSenderName() + ": " + message.getContent();
+        updateConversation.put("lastMessage", lastMessage);
+        Map timestampNow = new HashMap();
+        timestampNow.put("timestamp", ServerValue.TIMESTAMP);
+        updateConversation.put("timestampCreated", timestampNow);
+        databaseReference.child(Constants.CHATS).child(conversationId).updateChildren(updateConversation, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                callback.notifyUI(null);
+            }
+        });
+    }
+
+    @Override
+    public void updateUserStatusInConversation(String conversationId, String userId, final IFirebaseCallback callback) {
+        databaseReference.child(Constants.CHATS).child(conversationId).child(Constants.CONVERSATION_FIELD_MEMBERS)
+                .child(userId).setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                callback.notifyUI(null);
+            }
+        });
+    }
+
+    @Override
+    public void getConversation(final String conversationId, final IFirebaseCallback callback){
+        FirebaseDatabase.getInstance().getReference().child(Constants.CHATS).child(conversationId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final List<Conversation> conversations = new ArrayList<Conversation>();
+                final Conversation conversation = dataSnapshot.getValue(Conversation.class);
+                conversations.add(conversation);
+                callback.notifyUI(conversations);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }

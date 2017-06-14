@@ -3,9 +3,7 @@ package com.example.pma_tim10.chatapp.activities;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,11 +45,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TimeZone;
-import java.util.UUID;
 
 /**
  * Created by Dorian on 5/16/2017.
@@ -61,78 +56,86 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 
     private static final String TAG = MessagesActivity.class.getSimpleName();
 
-    public static List<Message> messages;
-    public static HashMap<String,User> usersInChat;
+    //
+    private String conversationId;
+    private Conversation mConversation;
 
+    //
+    private List<Message> mMessages;
+    private HashMap<String,User> mUsersInChat;
 
+    //
     private MessagesArrayAdapter messagesArrayAdapter;
+    private RecyclerView recyclerView;
 
-    private String secondUserId;
-    public static String conversationId;
-
+    //
     private IMessageService messageService;
     private IConversationService conversationService;
     private IUserService userService;
+    private GPSTracker gpsTracker;
 
+    //
     private FirebaseUser currentUser;
 
-    private RecyclerView recyclerView;
-
+    //
     private EditText etNewMessageText;
     private ImageButton btnSendMessage;
 
-    private GPSTracker gpsTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
 
+        bindViews();
+        initRecyclerViewComponents();
+        initServices();
+
+        // get current user
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        // get conversation id
+        conversationId = getIntent().getStringExtra(Constants.IE_CONVERSATION_ID_KEY);
+
+        initConversation();
+    }
+
+    private void bindViews() {
         etNewMessageText = (EditText) findViewById(R.id.text_field_for_message);
         btnSendMessage = (ImageButton) findViewById(R.id.send_message_button);
         btnSendMessage.setOnClickListener(this);
+    }
 
-
-        messages = new ArrayList<>();
-        usersInChat = new HashMap<>();
-        messagesArrayAdapter = new MessagesArrayAdapter(messages, this);
+    private void initRecyclerViewComponents() {
+        mMessages = new ArrayList<>();
+        mUsersInChat = new HashMap<>();
+        messagesArrayAdapter = new MessagesArrayAdapter(mMessages, mUsersInChat, this);
         recyclerView = (RecyclerView) findViewById(R.id.message_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(messagesArrayAdapter);
+    }
 
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
+    private void initServices() {
         messageService = new MessageService();
         conversationService = new ConversationService();
         userService = new UserService();
-
         gpsTracker = new GPSTracker(this,this);
-
-        secondUserId = getIntent().getStringExtra(Constants.IE_USER_ID_KEY);
-        conversationId = getIntent().getStringExtra(Constants.IE_CONVERSATION_ID_KEY);
-        //setTitle(getIntent().getStringExtra(Constants.IE_CONVERSATION_NAME).replace(currentUser.getDisplayName(),""));
-
-
-        if(conversationId == null)
-            getConversationId();
-        else
-            populateUsers(conversationId);
-
     }
 
-    private void getConversationId() {
-        conversationService.getConversationIdForUserId(secondUserId, new IFirebaseCallback() {
+    private void initConversation() {
+        conversationService.getConversation(conversationId, new IFirebaseCallback() {
             @Override
             public void notifyUI(List data) {
-                Conversation c = data.size() > 0 ? (Conversation) data.get(0) : null;
-                conversationId = c != null ? c.getId() : UUID.randomUUID().toString();
-                populateUsers(conversationId);
+                mConversation = (Conversation) data.get(0);
+                setTitle(mConversation.getName().replace(currentUser.getDisplayName(),""));
+                initConversationUsers();
             }
         });
     }
 
-    private void populateUsers(final String conversationId) {
-        conversationService.getConversationUsers(conversationId, currentUser.getUid(), secondUserId, new IFirebaseCallback() {
+    private void initConversationUsers() {
+        conversationService.getConversationUsers(conversationId, new IFirebaseCallback() {
             @Override
             public void notifyUI(List data) {
                 initUsers((List<User>)data);
@@ -141,6 +144,11 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
+    private void initUsers(List<User> users) {
+        mUsersInChat.clear();
+        for(User u : users)
+            mUsersInChat.put(u.getUid(), u);
+    }
 
     private void populateMessages(final String conversationId){
         messageService.getMessages(conversationId, new IFirebaseCallback() {
@@ -152,15 +160,9 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
-    private void initUsers(List<User> users) {
-        usersInChat.clear();
-        for(User u : users)
-            usersInChat.put(u.getUid(), u);
-    }
-
     private void updateUI(List<Message> messages) {
-        this.messages.clear();
-        this.messages.addAll(messages);
+        this.mMessages.clear();
+        this.mMessages.addAll(messages);
         this.messagesArrayAdapter.notifyDataSetChanged();
         scrollDown();
     }
@@ -168,13 +170,9 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
     private void goToMainActivity(){
         Log.d(TAG,"Going to main activity");
         Intent intent = new Intent(this,MainActivity.class);
-        usersInChat = null;
-        messages.clear();
-        conversationId = null;
         startActivity(intent);
         finish();
     }
-
 
     @Override
     public void onBackPressed() {
@@ -219,26 +217,35 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 
         final Message newMsg = new Message();
         newMsg.setContent(msgText);
-        newMsg.setTimestamp(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis());
         newMsg.setSenderName(currentUser.getDisplayName());
         newMsg.setSender(currentUser.getUid());
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean isLocation = prefs.getBoolean(Constants.LOCATION_STATE,true);
-        if (isLocation) {
-            if (gpsTracker.canGetLocation()) {
-                longitude = gpsTracker.getLongitude();
-                latitude = gpsTracker.getLatitude();
-                newMsg.setLatitude(latitude);
-                newMsg.setLongitude(longitude);
-            } else
-                gpsTracker.showSettingsAlert();
-        }
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//        boolean isLocation = prefs.getBoolean(Constants.LOCATION_STATE,true);
+//        if (isLocation) {
+//            if (gpsTracker.canGetLocation()) {
+//                longitude = gpsTracker.getLongitude();
+//                latitude = gpsTracker.getLatitude();
+//                newMsg.setLatitude(latitude);
+//                newMsg.setLongitude(longitude);
+//            } else
+//                gpsTracker.showSettingsAlert();
+//        }
 
-        messageService.sendMessage(newMsg, usersInChat , conversationId, new IFirebaseCallback() {
+        messageService.sendMessage(conversationId, newMsg, mUsersInChat, new IFirebaseCallback() {
             @Override
             public void notifyUI(List data) {
-//                messages.add(newMsg);
+                if(mMessages.size() <= 1) {
+                    for(String userId : mUsersInChat.keySet())
+                        if(!userId.equals(currentUser.getUid())){
+                            conversationService.updateUserStatusInConversation(conversationId, userId, new IFirebaseCallback() {
+                                @Override
+                                public void notifyUI(List data) {
+                                }
+                            });
+                            break;
+                        }
+                }
                 etNewMessageText.setText("");
             }
         });
@@ -248,7 +255,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         recyclerView.post(new Runnable() {
             @Override
             public void run() {
-                recyclerView.scrollToPosition(messages.size()-1);
+                recyclerView.scrollToPosition(mMessages.size()-1);
             }
         });
     }

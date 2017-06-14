@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
+import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.User;
 import com.example.pma_tim10.chatapp.service.ConversationService;
 import com.example.pma_tim10.chatapp.service.IConversationService;
@@ -29,7 +30,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Daniel on 5/23/2017.
@@ -181,16 +184,42 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
         }
         //btn open chat
         if (i == R.id.open_chat){
-            goToChatActivity(userProfile.getUid());
+            getConversationId();
         }
 
     }
 
-    private void goToChatActivity(String userId) {
+    private void getConversationId() {
+        // get conversation id or create new conversation if not exists
+        conversationService.getConversationIdForUserId(userProfile.getUid(), new IFirebaseCallback() {
+            @Override
+            public void notifyUI(List data) {
+                List<Conversation> conversations = data;
+                if (conversations.size() > 0) {
+                    goToMessageActivity(conversations.get(0).getId());
+                }else{
+                    // create new conversation
+                    final Conversation newConversation = new Conversation();
+                    newConversation.setId(UUID.randomUUID().toString());
+                    newConversation.setMembers(new HashMap<String, Boolean>(){{put(userProfile.getUid(),false);
+                                                                                put(currentUser.getUid(),true);}});
+                    newConversation.setName(currentUser.getDisplayName() + " " + userProfile.getFullName());
+                    conversationService.createConversation(newConversation, new IFirebaseCallback() {
+                        @Override
+                        public void notifyUI(List data) {
+                            goToMessageActivity(newConversation.getId());
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    private void goToMessageActivity(final String conversationId){
         Log.d(TAG,"Going to chat activity");
         Intent intent = new Intent(this,MessagesActivity.class);
-        intent.putExtra(Constants.IE_USER_ID_KEY, userId);
-        intent.putExtra(Constants.IE_CONVERSATION_NAME, userProfile.getFullName());
+        intent.putExtra(Constants.IE_CONVERSATION_ID_KEY, conversationId);
         startActivity(intent);
         finish();
     }
