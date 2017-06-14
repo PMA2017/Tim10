@@ -96,7 +96,7 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
         Message message = messages.get(position);
         holder.txtMessageText.setText(message.getContent());
         holder.txtMessageDateTime.setText(message.getDateTimeFormatted());
-        //holder.addMessageListenerLocation(message.getLongitude(),message.getLatitude());
+        holder.addMessageListenerLocation(message.getLongitude(),message.getLatitude());
         User u = usersInChat.get(message.getSender());
         Bitmap bitmap = u != null ? u.getUserProfilePhoto() : null;
         if(u != null && bitmap != null)

@@ -1,9 +1,14 @@
 package com.example.pma_tim10.chatapp.activities;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.ChatApp;
 import com.example.pma_tim10.chatapp.R;
@@ -121,7 +127,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         messageService = new MessageService();
         conversationService = new ConversationService();
         userService = new UserService();
-        gpsTracker = new GPSTracker(this,this);
+        gpsTracker = new GPSTracker(getApplicationContext());
     }
 
     private void initConversation() {
@@ -223,17 +229,18 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         newMsg.setSender(currentUser.getUid());
         etNewMessageText.setText("");
 
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//        boolean isLocation = prefs.getBoolean(Constants.LOCATION_STATE,true);
-//        if (isLocation) {
-//            if (gpsTracker.canGetLocation()) {
-//                longitude = gpsTracker.getLongitude();
-//                latitude = gpsTracker.getLatitude();
-//                newMsg.setLatitude(latitude);
-//                newMsg.setLongitude(longitude);
-//            } else
-//                gpsTracker.showSettingsAlert();
-//        }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isLocation = prefs.getBoolean(Constants.LOCATION_STATE,true);
+        if (isLocation) {
+            Location location = gpsTracker.getLocation();
+            if (location != null) {
+                longitude = location.getLongitude();
+                latitude = location.getLatitude();
+                newMsg.setLatitude(latitude);
+                newMsg.setLongitude(longitude);
+            } else
+                Toast.makeText(this,"Cannot find location",Toast.LENGTH_SHORT).show();
+        }
 
         messageService.sendMessage(conversationId, newMsg, mUsersInChat, new IFirebaseCallback() {
             @Override

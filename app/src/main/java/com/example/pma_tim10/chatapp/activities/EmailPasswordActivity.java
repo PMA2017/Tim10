@@ -1,10 +1,16 @@
 package com.example.pma_tim10.chatapp.activities;
 
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -52,8 +58,6 @@ public class EmailPasswordActivity extends AppCompatActivity implements
 
     private UserService userService;
 
-    private GPSTracker gpsTracker;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,8 +81,6 @@ public class EmailPasswordActivity extends AppCompatActivity implements
 
         userService = new UserService();
 
-        gpsTracker = new GPSTracker(this,this);
-
         mLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -95,9 +97,24 @@ public class EmailPasswordActivity extends AppCompatActivity implements
                 Log.e(TAG,"Error on facebook login");
             }
         });
+        checkPermissions();
+    }
 
-        gpsTracker.showSettingsAlert();
-
+    private void checkPermissions() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        PackageInfo pInfo;
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
+            if (prefs.getLong("lastRunVersionCode", 0) < pInfo.versionCode) {
+                ActivityCompat.requestPermissions(EmailPasswordActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},123);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putLong("lastRunVersionCode", pInfo.versionCode);
+                editor.commit();
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Error reading versionCode");
+            e.printStackTrace();
+        }
     }
 
     @Override
