@@ -61,8 +61,8 @@ public class ConversationsArrayAdapter extends ArrayAdapter<Conversation> {
         holder.txtLastChattingDate.setText(rowItem.getDateTimeFormatted());
         holder.imageView.setImageResource(R.drawable.testing_image);
 
-
         return convertView;
     }
+
 
 }

@@ -33,7 +33,7 @@ public class GPSTracker implements LocationListener{
 
     public Location getLocation() {
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(mContext,"Permission not granted",Toast.LENGTH_LONG).show();
+            //Toast.makeText(mContext,"Permission not granted",Toast.LENGTH_LONG).show();
             return null;
         }
 
@@ -44,7 +44,7 @@ public class GPSTracker implements LocationListener{
             Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             return location;
         } else {
-            Toast.makeText(mContext,"Please enable network or gps", Toast.LENGTH_LONG).show();
+            //Toast.makeText(mContext,"Please enable network or gps", Toast.LENGTH_LONG).show();
         }
         return null;
     }

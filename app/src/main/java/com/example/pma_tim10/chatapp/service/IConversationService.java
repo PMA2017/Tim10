@@ -19,7 +19,7 @@ public interface IConversationService {
 
 
     void createConversation(final Conversation conversation, final IFirebaseCallback callback);
-    void deleteConversation(final String conversationId, final IFirebaseCallback callback);
+    void deleteConversation(final Conversation conversation, final IFirebaseCallback callback);
 
     void getConversation(final String conversationId, final IFirebaseCallback callback);
 

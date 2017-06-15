@@ -138,18 +138,30 @@ public class ConversationService implements IConversationService {
     }
 
     @Override
-    public void deleteConversation(final String conversationId, final IFirebaseCallback callback) {
-        databaseReference.child(Constants.CHATS).child(conversationId).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                databaseReference.child(Constants.MESSAGES).child(conversationId).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        callback.notifyUI(null);
-                    }
-                });
-            }
-        });
+    public void deleteConversation(final Conversation conversation, final IFirebaseCallback callback) {
+        if(conversation.getMembers().size() == 1){
+            // delete whole conversation with messages
+            databaseReference.child(Constants.CHATS).child(conversation.getId()).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    databaseReference.child(Constants.MESSAGES).child(conversation.getId()).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            callback.notifyUI(null);
+                        }
+                    });
+                }
+            });
+        }else{
+            // delete user from conversation
+            databaseReference.child(Constants.CHATS).child(conversation.getId())
+                    .child(Constants.CONVERSATION_FIELD_MEMBERS).child(currentUser.getUid()).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    callback.notifyUI(null);
+                }
+            });
+        }
     }
 
     @Override

@@ -18,7 +18,7 @@
     <string name="action_manage_users">Manage users</string>
     <string name="facebook_app_id">226706371176212</string>
     <string name="google_maps_key">AIzaSyDgD-d8dj8_FD0TaIxQkKOXxG84pUuXq_A</string>
-
+    <string name="action_delete_conversation">Delete</string>
 
 
 </resources>

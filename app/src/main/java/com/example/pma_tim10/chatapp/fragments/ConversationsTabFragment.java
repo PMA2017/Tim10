@@ -8,9 +8,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 
 import com.example.pma_tim10.chatapp.R;
@@ -26,12 +30,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ConversationsTabFragment extends ListFragment implements AdapterView.OnItemClickListener {
+public class ConversationsTabFragment extends ListFragment implements AdapterView.OnItemClickListener , AdapterView.OnItemLongClickListener {
 
-    ArrayList<Conversation> conversations;
-    ConversationsArrayAdapter conversationsArrayAdapter;
+    private ArrayList<Conversation> conversations;
+    private ConversationsArrayAdapter conversationsArrayAdapter;
 
-    IConversationService iConversationService;
+    private IConversationService conversationService;
+
+    private Conversation selectedConversation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,12 +50,15 @@ public class ConversationsTabFragment extends ListFragment implements AdapterVie
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        iConversationService = new ConversationService();
+        conversationService = new ConversationService();
 
         conversations = new ArrayList<>();
         conversationsArrayAdapter = new ConversationsArrayAdapter(getActivity(),android.R.id.list, conversations);
         setListAdapter(conversationsArrayAdapter);
         getListView().setOnItemClickListener(this);
+        getListView().setOnItemLongClickListener(this);
+
+        registerForContextMenu(getListView());
 
         populateConversations();
     }
@@ -65,7 +74,7 @@ public class ConversationsTabFragment extends ListFragment implements AdapterVie
     }
 
     private void populateConversations(){
-        iConversationService.getConversations(new IFirebaseCallback() {
+        conversationService.getConversations(new IFirebaseCallback() {
             @Override
             public void notifyUI(List data) {
                 updateUI((List<Conversation>) data);
@@ -80,4 +89,34 @@ public class ConversationsTabFragment extends ListFragment implements AdapterVie
         conversationsArrayAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        selectedConversation = (Conversation)parent.getItemAtPosition(position);
+        getListView().showContextMenu();
+        return true;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.menu_conversation, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_delete_conversation:
+                deleteConversation();
+        }
+        return true;
+    }
+
+    private void deleteConversation() {
+        conversationService.deleteConversation(selectedConversation, new IFirebaseCallback() {
+            @Override
+            public void notifyUI(List data) {
+
+            }
+        });
+    }
 }

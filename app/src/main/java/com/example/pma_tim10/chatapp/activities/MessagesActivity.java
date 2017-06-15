@@ -22,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.ChatApp;
@@ -155,6 +156,10 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         mUsersInChat.clear();
         for(User u : users)
             mUsersInChat.put(u.getUid(), u);
+        // if other user deleted chat
+        if(mUsersInChat.size() == 1){
+            ((RelativeLayout)findViewById(R.id.rl_footer)).setVisibility(View.INVISIBLE);
+        }
     }
 
     private void populateMessages(final String conversationId){
