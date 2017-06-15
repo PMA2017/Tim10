@@ -8,10 +8,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.activities.UserDetailsActivity;
@@ -35,6 +39,8 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
     private PeopleArrayAdapter peopleArrayAdapter;
     private FirebaseUser currentUser;
 
+    private EditText searchField;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -47,6 +53,26 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
         super.onActivityCreated(savedInstanceState);
 
         userService = new UserService();
+
+        searchField = (EditText)getView().findViewById(R.id.search_people);
+        searchField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() != 0)
+                    updateUI(filterPeopleByCriteria(charSequence.toString(),people));
+                else
+                    populatePeople();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -85,6 +111,16 @@ public class PeopleTabFragment extends ListFragment implements AdapterView.OnIte
                 updateUI((List<User>)data);
             }
         });
+    }
+
+    private List<User> filterPeopleByCriteria(String criteria, List<User> people) {
+        ArrayList<User> result = new ArrayList<>();
+        for (User u : people) {
+            String userFullName = u.getFullName().toLowerCase();
+            if (userFullName.startsWith(criteria.toLowerCase()))
+                result.add(u);
+        }
+        return result;
     }
 
 }
