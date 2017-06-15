@@ -135,8 +135,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void notifyUI(List data) {
                 mConversation = (Conversation) data.get(0);
-                setTitle(mConversation.getName().replace(currentUser.getDisplayName(),""));
-                //initConversationUsers();
+                setTitle(mConversation.getName().replace(currentUser.getDisplayName(), ""));
             }
         });
     }
@@ -238,8 +237,9 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
                 latitude = location.getLatitude();
                 newMsg.setLatitude(latitude);
                 newMsg.setLongitude(longitude);
-            } else
-                Toast.makeText(this,"Cannot find location",Toast.LENGTH_SHORT).show();
+            } else {
+                //Toast.makeText(MessagesActivity.this, "Cannot find location", Toast.LENGTH_SHORT).show();
+            }
         }
 
         messageService.sendMessage(conversationId, newMsg, mUsersInChat, new IFirebaseCallback() {

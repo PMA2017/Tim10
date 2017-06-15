@@ -97,4 +97,10 @@ public class Message {
     public void setSenderName(String senderName) {
         this.senderName = senderName;
     }
+
+    @Exclude
+    public boolean isLocationSet() {
+        return longitude == null || latitude == null ? false : true;
+    }
+
 }
