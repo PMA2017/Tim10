@@ -132,8 +132,9 @@ public class MainActivity extends AppCompatActivity {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser().getProviders().contains(Constants.FACEBOOK_PROVIDER_ID));
             LoginManager.getInstance().logOut();
-        auth.signOut();
         userService.setOffline();
+        userService.setFcmToken(null);
+        auth.signOut();
         goToLoginActivity();
     }
 
