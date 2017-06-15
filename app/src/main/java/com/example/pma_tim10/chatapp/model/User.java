@@ -4,16 +4,13 @@ import android.graphics.Bitmap;
 
 import com.google.firebase.database.Exclude;
 
-import java.util.Objects;
-
 /**
  * Created by Dorian on 5/20/2017.
  */
 public class User {
     private String uid;
     private String email;
-    private String name;
-    private String surname;
+    private String fullName;
     private String photoURL;
     private String aboutMe;
     private Boolean online;
@@ -25,11 +22,10 @@ public class User {
     public User() {
     }
 
-    public User(String uid, String email, String name, String surname, String photoURL, String aboutMe, Boolean online, String fcmtoken) {
+    public User(String uid,String fullName, String email, String photoURL, String aboutMe, Boolean online, String fcmtoken) {
         this.uid = uid;
+        this.fullName = fullName;
         this.email = email;
-        this.name = name;
-        this.surname = surname;
         this.photoURL = photoURL;
         this.aboutMe = aboutMe;
         this.online = online;
@@ -58,22 +54,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
     }
 
     public String getPhotoURL() {
@@ -113,9 +93,12 @@ public class User {
         this.userProfilePhoto = userProfilePhoto;
     }
 
-    @Exclude
     public String getFullName() {
-        return getName() + " " + getSurname();
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     @Override

@@ -34,7 +34,7 @@
         android:typeface="sans" />
 
     <TextView
-        android:id="@+id/friend_surname"
+        android:id="@+id/friend_email"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/thumbnail"

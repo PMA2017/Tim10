@@ -31,7 +31,7 @@ public class FriendsArrayAdapter extends ArrayAdapter<User> {
     private class ViewHolder {
         ImageView imageView;
         TextView txtFriendName;
-        TextView txtFriendSurname;
+        TextView txtFriendEmail;
         TextView txtFriendStatus;
     }
 
@@ -45,15 +45,15 @@ public class FriendsArrayAdapter extends ArrayAdapter<User> {
             convertView = mInflater.inflate(R.layout.friends_list_item, null);
             holder = new ViewHolder();
             holder.txtFriendName = (TextView) convertView.findViewById(R.id.friend_name);
-            holder.txtFriendSurname = (TextView) convertView.findViewById(R.id.friend_surname);
+            holder.txtFriendEmail = (TextView) convertView.findViewById(R.id.friend_email);
             holder.txtFriendStatus = (TextView) convertView.findViewById(R.id.friend_status);
             holder.imageView = (ImageView) convertView.findViewById(R.id.friend_image);
             convertView.setTag(holder);
         } else
             holder = (ViewHolder) convertView.getTag();
 
-        holder.txtFriendSurname.setText(friend.getSurname());
-        holder.txtFriendName.setText(friend.getName());
+        holder.txtFriendEmail.setText(friend.getEmail());
+        holder.txtFriendName.setText(friend.getFullName());
         holder.txtFriendStatus.setText(friend.getStatus());
         int statusColor = friend.getStatus() == "online" ? Color.GREEN : Color.RED;
         holder.txtFriendStatus.setTextColor(statusColor);

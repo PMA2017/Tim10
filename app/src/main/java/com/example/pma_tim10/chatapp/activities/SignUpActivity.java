@@ -120,8 +120,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         final User newUser = new User();
-        newUser.setName(nameField.getText().toString());
-        newUser.setSurname(surnameField.getText().toString());
+        newUser.setFullName(nameField.getText().toString() + " " + surnameField.getText().toString());
         newUser.setEmail(emailField.getText().toString());
         newUser.setFcmtoken(new SharedPrefUtil(getApplicationContext()).getString(Constants.USER_FCM_TOKEN_FIELD));
 

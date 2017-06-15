@@ -31,7 +31,7 @@ public class PeopleArrayAdapter extends ArrayAdapter<User> {
     private class ViewHolder {
         ImageView imageView;
         TextView txtName;
-        TextView txtSurname;
+        TextView txtEmail;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -44,14 +44,14 @@ public class PeopleArrayAdapter extends ArrayAdapter<User> {
             convertView = mInflater.inflate(R.layout.people_list_item, null);
             holder = new PeopleArrayAdapter.ViewHolder();
             holder.txtName = (TextView) convertView.findViewById(R.id.person_name);
-            holder.txtSurname = (TextView) convertView.findViewById(R.id.person_surname);
+            holder.txtEmail = (TextView) convertView.findViewById(R.id.person_email);
             holder.imageView = (ImageView) convertView.findViewById(R.id.list_image);
             convertView.setTag(holder);
         } else
             holder = (PeopleArrayAdapter.ViewHolder) convertView.getTag();
 
-        holder.txtName.setText(rowItem.getName());
-        holder.txtSurname.setText(rowItem.getSurname());
+        holder.txtName.setText(rowItem.getFullName());
+        holder.txtEmail.setText(rowItem.getEmail());
         holder.imageView.setImageResource(R.drawable.testing_image);
 
         return convertView;

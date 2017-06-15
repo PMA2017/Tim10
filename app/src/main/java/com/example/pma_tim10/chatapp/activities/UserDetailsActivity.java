@@ -141,7 +141,7 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void updateUI(User user) {
-        tvUserFullName.setText(user.getName() + " " + user.getSurname());
+        tvUserFullName.setText(user.getFullName());
         tvUserEmail.setText(user.getEmail());
         tvUserAboutMe.setText(user.getAboutMe());
 

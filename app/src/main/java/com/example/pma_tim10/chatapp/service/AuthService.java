@@ -25,7 +25,7 @@ public class AuthService implements IAuthService {
     public boolean registerUser(String uid, User user) {
         try{
             databaseReference.child(Constants.USERS).child(uid).setValue(user);
-            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(user.getName() + " " + user.getSurname()).build();
+            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(user.getFullName()).build();
             FirebaseAuth.getInstance().getCurrentUser().updateProfile(profileUpdates);
             return true;
         }catch (Exception e)

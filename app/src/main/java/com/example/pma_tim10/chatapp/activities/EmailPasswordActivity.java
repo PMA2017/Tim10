@@ -216,7 +216,7 @@ public class EmailPasswordActivity extends AppCompatActivity implements
                             FirebaseUser firebaseUser = mAuth.getCurrentUser();
                             User user = new User();
                             user.setUid(firebaseUser.getUid());
-                            user.setName(firebaseUser.getDisplayName());
+                            user.setFullName(firebaseUser.getDisplayName());
                             user.setPhotoURL(firebaseUser.getPhotoUrl().toString());
                             user.setEmail(firebaseUser.getEmail());
                             userService.checkUserByUid(firebaseUser.getUid(), user, new IFirebaseCallback() {
