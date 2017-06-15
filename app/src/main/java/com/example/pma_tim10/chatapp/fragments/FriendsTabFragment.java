@@ -8,10 +8,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.activities.UserDetailsActivity;
@@ -40,6 +43,8 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
 
     private IUserService userService;
 
+    EditText searchField;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,6 +58,27 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
         super.onActivityCreated(savedInstanceState);
 
         userService = new UserService();
+
+        searchField = (EditText) getActivity().findViewById(R.id.search_friends);
+        searchField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() != 0)
+                    updateUI(filterFriendsByCriteria(charSequence.toString(),friends));
+                else
+                    populateFriends();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         friends = new ArrayList<>();
         friendsArrayAdapter = new FriendsArrayAdapter(getActivity(), android.R.id.list, friends);
@@ -91,6 +117,16 @@ public class FriendsTabFragment extends ListFragment implements AdapterView.OnIt
                 updateUI((List<User>)data);
             }
         });
+    }
+
+    private List<User> filterFriendsByCriteria(String criteria, List<User> friends) {
+        ArrayList<User> result = new ArrayList<>();
+        for (User u : friends) {
+            String userFullName = u.getFullName().toLowerCase();
+            if (userFullName.startsWith(criteria.toLowerCase()))
+                result.add(u);
+        }
+        return result;
     }
 
 }

@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.example.pma_tim10.chatapp.R;
@@ -48,6 +51,8 @@ public class ConversationsTabFragment extends ListFragment implements AdapterVie
 
     private ImageButton btnNewGroupChat;
 
+    private EditText searchField;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,6 +66,27 @@ public class ConversationsTabFragment extends ListFragment implements AdapterVie
         super.onActivityCreated(savedInstanceState);
 
         conversationService = new ConversationService();
+
+        searchField = (EditText)getActivity().findViewById(R.id.message_search);
+        searchField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() != 0)
+                    updateUI(filterConversationsByCriteria(charSequence.toString(),conversations));
+                else
+                    populateConversations();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         conversations = new ArrayList<>();
         conversationsArrayAdapter = new ConversationsArrayAdapter(getActivity(),android.R.id.list, conversations);
@@ -145,4 +171,15 @@ public class ConversationsTabFragment extends ListFragment implements AdapterVie
         ManageUsersDialogFragment mudf = new ManageUsersDialogFragment();
         mudf.show(fm,"ManageUsersFragment");
     }
+
+    private List<Conversation> filterConversationsByCriteria(String criteria, List<Conversation> conversations) {
+        ArrayList<Conversation> result = new ArrayList<>();
+        for (Conversation c : conversations) {
+            String conversationName = c.getName().toLowerCase();
+            if (conversationName.startsWith(criteria.toLowerCase()))
+                result.add(c);
+        }
+        return result;
+    }
+
 }

@@ -313,4 +313,6 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         super.onPause();
         ChatApp.setChatActivityOpen(false);
     }
+
+
 }
