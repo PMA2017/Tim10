@@ -3,6 +3,8 @@ package com.example.pma_tim10.chatapp.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Set;
+
 /**
  * Created by Aleksandar on 6/13/2017.
  */
@@ -31,6 +33,13 @@ public class SharedPrefUtil {
         mSharedPreferences = mContext.getSharedPreferences(APP_PREFS, Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
         mEditor.putString(key, value);
+        mEditor.commit();
+    }
+
+    public void saveStringSet(String key, Set<String> value){
+        mSharedPreferences = mContext.getSharedPreferences(APP_PREFS, Context.MODE_PRIVATE);
+        mEditor = mSharedPreferences.edit();
+        mEditor.putStringSet(key, value);
         mEditor.commit();
     }
 
@@ -83,6 +92,11 @@ public class SharedPrefUtil {
     public String getString(String key, String defaultValue) {
         mSharedPreferences = mContext.getSharedPreferences(APP_PREFS, Context.MODE_PRIVATE);
         return mSharedPreferences.getString(key, defaultValue);
+    }
+
+    public Set<String> getStringSet(String key, Set<String> defaultValue) {
+        mSharedPreferences = mContext.getSharedPreferences(APP_PREFS, Context.MODE_PRIVATE);
+        return mSharedPreferences.getStringSet(key, defaultValue);
     }
 
     /**

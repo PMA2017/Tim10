@@ -80,13 +80,14 @@ public class ConversationService implements IConversationService {
                     Conversation conversation = ds.getValue(Conversation.class);
 
                     //current member conversations
-                    if (conversation.getMembers() != null)
-                        if(conversation.getMembers().size() == 2)
-                            if (conversation.getMembers().containsKey(currentUser.getUid())&&
-                                    conversation.getMembers().containsKey(userId)) {
-                                conversations.add(conversation);
-                                break;
-                            }
+                    if(!conversation.isGroup())
+                        if (conversation.getMembers() != null)
+                            if(conversation.getMembers().size() == 2)
+                                if (conversation.getMembers().containsKey(currentUser.getUid())&&
+                                        conversation.getMembers().containsKey(userId)) {
+                                    conversations.add(conversation);
+                                    break;
+                                }
                 }
 
                 //update ui

@@ -18,6 +18,7 @@ import com.example.pma_tim10.chatapp.service.IConversationService;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Aleksandar on 6/10/2017.
@@ -25,13 +26,12 @@ import java.util.List;
 
 public class ManageUsersArrayAdapter extends RecyclerView.Adapter<ManageUsersArrayAdapter.UserViewHolder> {
 
-    private List<User> friends;
+    private List<User> people;
+    private HashMap<String,Boolean> members;
 
-    private IConversationService conversationService;
-
-    public ManageUsersArrayAdapter(List<User> friends) {
-        this.friends = friends;
-        this.conversationService = new ConversationService();
+    public ManageUsersArrayAdapter(List<User> people,HashMap<String,Boolean> mem) {
+        this.people = people;
+        this.members = mem;
     }
 
     @Override
@@ -42,44 +42,29 @@ public class ManageUsersArrayAdapter extends RecyclerView.Adapter<ManageUsersArr
 
     @Override
     public void onBindViewHolder(final UserViewHolder holder, int position) {
-//        final User user = friends.get(position);
-//        holder.txtName.setText(user.getFullName());
-//        holder.txtEmail.setText(user.getEmail());
-//        int imageId = MessagesActivity.usersInChat.containsKey(user.getUid()) ? R.drawable.ic_remove_from_chat : R.drawable.ic_add_to_chat;
-//        holder.ibAddRemove.setImageResource(imageId);
-//
-//        holder.ibAddRemove.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(MessagesActivity.usersInChat.containsKey(user.getUid())){
-//                    MessagesActivity.usersInChat.remove(user.getUid());
-//                }else{
-//                    MessagesActivity.usersInChat.put(user.getUid(),user);
-//                }
-//                conversationService.updateConversationUsers(MessagesActivity.conversationId, MessagesActivity.usersInChat, new IFirebaseCallback() {
-//                    @Override
-//                    public void notifyUI(List data) {
-//                        int imageId = MessagesActivity.usersInChat.containsKey(user.getUid()) ? R.drawable.ic_remove_from_chat : R.drawable.ic_add_to_chat;
-//                        holder.ibAddRemove.setImageResource(imageId);
-//                        StringBuilder convName = new StringBuilder();
-//                        for(User u : MessagesActivity.usersInChat.values()){
-//                            convName.append(u.getFullName() + " ");
-//                        }
-//                        conversationService.updateConversationName(MessagesActivity.conversationId, convName.toString(), new IFirebaseCallback() {
-//                            @Override
-//                            public void notifyUI(List data) {
-//
-//                            }
-//                        });
-//                    }
-//                });
-//            }
-//        });
+        final User user = people.get(position);
+        holder.txtName.setText(user.getFullName());
+        holder.txtEmail.setText(user.getEmail());
+        int imageId = members.containsKey(user.getUid()) ? R.drawable.ic_remove_from_chat : R.drawable.ic_add_to_chat;
+        holder.ibAddRemove.setImageResource(imageId);
+
+        holder.ibAddRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(members.containsKey(user.getUid())){
+                    members.remove(user.getUid());
+                }else{
+                    members.put(user.getUid(),true);
+                }
+                int imageId = members.containsKey(user.getUid()) ? R.drawable.ic_remove_from_chat : R.drawable.ic_add_to_chat;
+                holder.ibAddRemove.setImageResource(imageId);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return friends.size();
+        return people.size();
     }
 
     public class UserViewHolder extends RecyclerView.ViewHolder {

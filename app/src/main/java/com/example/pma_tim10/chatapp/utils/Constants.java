@@ -36,4 +36,6 @@ public class Constants {
 
     public static final String FACEBOOK_PROVIDER_ID = "facebook.com";
     public static final String LOCATION_STATE = "locationstate";
+
+    public static final String CONVERSATION_NEW_MESSAGES_SET = "convnewmsgset";
 }

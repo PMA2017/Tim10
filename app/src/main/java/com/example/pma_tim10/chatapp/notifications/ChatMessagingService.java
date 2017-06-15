@@ -14,9 +14,13 @@ import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.activities.MainActivity;
 import com.example.pma_tim10.chatapp.activities.MessagesActivity;
 import com.example.pma_tim10.chatapp.utils.Constants;
+import com.example.pma_tim10.chatapp.utils.SharedPrefUtil;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Daniel on 6/10/2017.
@@ -44,6 +48,14 @@ public class ChatMessagingService extends FirebaseMessagingService {
             String fcmToken = remoteMessage.getData().get("fcm_token");
             String conversationid = remoteMessage.getData().get("conversation_id");
             String conversationName = remoteMessage.getData().get("converastion_name");
+
+            // save unseen conversations
+            SharedPrefUtil pref = new SharedPrefUtil(getApplicationContext());
+            Set<String> unseenConversations = pref.getStringSet(Constants.CONVERSATION_NEW_MESSAGES_SET, new HashSet<String>());
+            unseenConversations.add(conversationid);
+            pref.saveStringSet(Constants.CONVERSATION_NEW_MESSAGES_SET,unseenConversations);
+
+
 
             // Don't show notification if chat activity is open.
             if (!ChatApp.isChatActivityOpen()) {

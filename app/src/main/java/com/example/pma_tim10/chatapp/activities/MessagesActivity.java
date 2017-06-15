@@ -1,21 +1,15 @@
 package com.example.pma_tim10.chatapp.activities;
 
-import android.Manifest;
 import android.app.Dialog;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,13 +17,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.ChatApp;
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.adapters.MessagesArrayAdapter;
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
-import com.example.pma_tim10.chatapp.fragments.ManageUsersDialogFragment;
 import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.Message;
 import com.example.pma_tim10.chatapp.model.User;
@@ -41,6 +33,7 @@ import com.example.pma_tim10.chatapp.service.IUserService;
 import com.example.pma_tim10.chatapp.service.MessageService;
 import com.example.pma_tim10.chatapp.service.UserService;
 import com.example.pma_tim10.chatapp.utils.Constants;
+import com.example.pma_tim10.chatapp.utils.SharedPrefUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -53,7 +46,9 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Dorian on 5/16/2017.
@@ -106,6 +101,16 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 
         initConversation();
         initConversationUsers();
+
+        seen();
+    }
+
+    private void seen() {
+        SharedPrefUtil pref = new SharedPrefUtil(getApplicationContext());
+        Set<String> unseenConversations = pref.getStringSet(Constants.CONVERSATION_NEW_MESSAGES_SET, new HashSet<String>());
+        unseenConversations.remove(conversationId);
+        pref.saveStringSet(Constants.CONVERSATION_NEW_MESSAGES_SET,unseenConversations);
+
     }
 
     private void bindViews() {
@@ -202,21 +207,6 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_manage_users:
-                manageUsers();
-        }
-        return true;
-    }
-
-    private void manageUsers() {
-        FragmentManager fm = getFragmentManager();
-        ManageUsersDialogFragment mudf = new ManageUsersDialogFragment();
-        mudf.show(fm,"ManageUsersFragment");
-    }
-
     private void sendMessage() {
         String msgText = etNewMessageText.getText().toString();
         if(msgText.trim().isEmpty()){
@@ -274,12 +264,6 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_message, menu);
-        return true;
-    }
 
     public void showMapDialog(final double latitude, final double longitude) {
         final Dialog dialog = new Dialog(this);

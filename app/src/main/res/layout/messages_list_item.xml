@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="5dip" >
+    android:padding="5dip">
 
     <LinearLayout
         android:id="@+id/thumbnail"
@@ -55,7 +55,7 @@
         android:layout_alignTop="@id/conversation_name"
         android:layout_marginRight="5dip"
         android:gravity="right"
-        android:textColor="#10bcc9"
+        android:textColor="#040404"
         android:textSize="10sp"
         android:textStyle="bold"
         tools:ignore="SmallSp" />

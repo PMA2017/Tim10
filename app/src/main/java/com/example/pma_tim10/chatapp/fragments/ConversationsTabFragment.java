@@ -4,6 +4,7 @@ package com.example.pma_tim10.chatapp.fragments;
  * Created by Dorian on 4/25/2017.
  */
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.activities.MessagesActivity;
@@ -25,12 +27,17 @@ import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.service.ConversationService;
 import com.example.pma_tim10.chatapp.service.IConversationService;
 import com.example.pma_tim10.chatapp.utils.Constants;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-public class ConversationsTabFragment extends ListFragment implements AdapterView.OnItemClickListener , AdapterView.OnItemLongClickListener {
+public class ConversationsTabFragment extends ListFragment implements AdapterView.OnItemClickListener , AdapterView.OnItemLongClickListener , View.OnClickListener {
 
     private ArrayList<Conversation> conversations;
     private ConversationsArrayAdapter conversationsArrayAdapter;
@@ -38,6 +45,9 @@ public class ConversationsTabFragment extends ListFragment implements AdapterVie
     private IConversationService conversationService;
 
     private Conversation selectedConversation;
+
+    private ImageButton btnNewGroupChat;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +69,8 @@ public class ConversationsTabFragment extends ListFragment implements AdapterVie
         getListView().setOnItemLongClickListener(this);
 
         registerForContextMenu(getListView());
+        btnNewGroupChat = (ImageButton) getActivity().findViewById(R.id.new_message_button);
+        btnNewGroupChat.setOnClickListener(this);
 
         populateConversations();
     }
@@ -118,5 +130,19 @@ public class ConversationsTabFragment extends ListFragment implements AdapterVie
 
             }
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.new_message_button:
+                openNewChatDialog();
+        }
+    }
+
+    private void openNewChatDialog() {
+        FragmentManager fm = getActivity().getFragmentManager();
+        ManageUsersDialogFragment mudf = new ManageUsersDialogFragment();
+        mudf.show(fm,"ManageUsersFragment");
     }
 }

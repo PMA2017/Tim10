@@ -21,6 +21,7 @@ public class Conversation {
     private String name;
     private Map<String,Boolean> members;
     private String lastMessage;
+    private boolean isGroup;
 
     private HashMap<String, Object> timestampCreated;
 
@@ -78,7 +79,15 @@ public class Conversation {
         this.lastMessage = lastMessage;
     }
 
-//    public Long getTimestamp() {
+    public boolean isGroup() {
+        return isGroup;
+    }
+
+    public void setGroup(boolean group) {
+        isGroup = group;
+    }
+
+    //    public Long getTimestamp() {
 //        return timestamp;
 //    }
 //

@@ -2,6 +2,7 @@ package com.example.pma_tim10.chatapp.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +12,14 @@ import android.widget.TextView;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.model.Conversation;
+import com.example.pma_tim10.chatapp.utils.Constants;
+import com.example.pma_tim10.chatapp.utils.SharedPrefUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Dorian on 5/15/2017.
@@ -56,10 +61,23 @@ public class ConversationsArrayAdapter extends ArrayAdapter<Conversation> {
         } else
             holder = (ConversationsArrayAdapter.ViewHolder) convertView.getTag();
 
-        holder.txtConversationName.setText(rowItem.getName().replace(currentUser.getDisplayName(),""));
+        //
+        if(rowItem.getMembers().size() == 1){
+            // alone in chat
+            holder.txtConversationName.setText("___" + rowItem.getName().replace(currentUser.getDisplayName(),"") + "___");
+        }else{
+            holder.txtConversationName.setText(rowItem.getName().replace(currentUser.getDisplayName(),""));
+        }
+
         holder.txtLastMessage.setText(rowItem.getLastMessage());
         holder.txtLastChattingDate.setText(rowItem.getDateTimeFormatted());
         holder.imageView.setImageResource(R.drawable.testing_image);
+
+        SharedPrefUtil pref = new SharedPrefUtil(context.getApplicationContext());
+        Set<String> unseenConversations = pref.getStringSet(Constants.CONVERSATION_NEW_MESSAGES_SET, new HashSet<String>());
+        if(unseenConversations.contains(rowItem.getId())){
+            convertView.setBackgroundColor(Color.parseColor("#A1BFFF"));
+        }
 
         return convertView;
     }
