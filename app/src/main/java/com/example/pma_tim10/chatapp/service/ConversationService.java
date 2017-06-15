@@ -71,7 +71,7 @@ public class ConversationService implements IConversationService {
 
     @Override
     public void getConversationIdForUserId(final String userId, final IFirebaseCallback callback) {
-        FirebaseDatabase.getInstance().getReference().child(Constants.CHATS).addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child(Constants.CHATS).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final List<Conversation> conversations = new ArrayList<Conversation>();
