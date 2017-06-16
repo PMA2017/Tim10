@@ -6,6 +6,15 @@
     android:gravity="bottom"
     android:orientation="horizontal">
 
+    <ImageButton
+        android:id="@+id/attach_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="5"
+        android:background="@null"
+        android:padding="4dp"
+        android:src="@drawable/ic_action_attach_file" />
+
     <EditText
         android:id="@+id/text_field_for_message"
         android:layout_width="match_parent"

@@ -1,9 +1,11 @@
 package com.example.pma_tim10.chatapp.activities;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,11 +19,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.ChatApp;
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.adapters.MessagesArrayAdapter;
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
+import com.example.pma_tim10.chatapp.callback.IFirebaseFileUploadCallback;
+import com.example.pma_tim10.chatapp.callback.IFirebaseProgressCallback;
 import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.Message;
 import com.example.pma_tim10.chatapp.model.User;
@@ -33,6 +38,7 @@ import com.example.pma_tim10.chatapp.service.IUserService;
 import com.example.pma_tim10.chatapp.service.MessageService;
 import com.example.pma_tim10.chatapp.service.UserService;
 import com.example.pma_tim10.chatapp.utils.Constants;
+import com.example.pma_tim10.chatapp.utils.FileUtils;
 import com.example.pma_tim10.chatapp.utils.SharedPrefUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -82,6 +88,13 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
     //
     private EditText etNewMessageText;
     private ImageButton btnSendMessage;
+    private ImageButton btnUploadFile;
+
+    //
+    private static final int FILE_SELECT_CODE = 0;
+
+    //
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -115,8 +128,12 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 
     private void bindViews() {
         etNewMessageText = (EditText) findViewById(R.id.text_field_for_message);
+
         btnSendMessage = (ImageButton) findViewById(R.id.send_message_button);
         btnSendMessage.setOnClickListener(this);
+
+        btnUploadFile = (ImageButton) findViewById(R.id.attach_file);
+        btnUploadFile.setOnClickListener(this);
     }
 
     private void initRecyclerViewComponents() {
@@ -202,12 +219,15 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         int btnId = v.getId();
         switch (btnId){
             case R.id.send_message_button:
-                sendMessage();
+                createMessage();
+                break;
+            case R.id.attach_file:
+                attachFile();
                 break;
         }
     }
 
-    private void sendMessage() {
+    private void createMessage() {
         String msgText = etNewMessageText.getText().toString();
         if(msgText.trim().isEmpty()){
             //neki alert
@@ -219,8 +239,6 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
 
         final Message newMsg = new Message();
         newMsg.setContent(msgText);
-        newMsg.setSenderName(currentUser.getDisplayName());
-        newMsg.setSender(currentUser.getUid());
         etNewMessageText.setText("");
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -237,7 +255,78 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
             }
         }
 
-        messageService.sendMessage(conversationId, newMsg, mUsersInChat, new IFirebaseCallback() {
+        sendMessage(newMsg);
+    }
+
+    private void attachFile() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        try {
+            startActivityForResult(Intent.createChooser(intent, "Select a File to Upload"), FILE_SELECT_CODE);
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(this, "Please install a File Manager.",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case FILE_SELECT_CODE:
+                if (resultCode == RESULT_OK) {
+                    // Get the Uri of the selected file
+                    final Uri uri = data.getData();
+                    openDialog();
+                    messageService.uploadFile(mConversation, uri, uploadProgressCallback, new IFirebaseFileUploadCallback() {
+                        @Override
+                        public void notify(String... args) {
+                            progressDialog.dismiss();
+
+                            String fileName = args[0];
+                            String fileExtension = args[1];
+
+                            final Message message = new Message();
+                            message.setContent(FileUtils.getFileName(uri,getContentResolver()));
+                            message.setFileName(fileName);
+                            message.setFileExtension(fileExtension);
+
+                            sendMessage(message);
+                        }
+                    }, uploadErrorCallback);
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void openDialog(){
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Uploading...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setMax(100);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    private IFirebaseProgressCallback uploadProgressCallback = new IFirebaseProgressCallback() {
+        @Override
+        public void changeProgressBarStatus(double value) {
+            progressDialog.setProgress((int) value);
+        }
+    };
+
+    private IFirebaseCallback uploadErrorCallback = new IFirebaseCallback() {
+        @Override
+        public void notifyUI(List data) {
+            progressDialog.dismiss();
+            Toast.makeText(MessagesActivity.this,"File is not uploaded",Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    private void sendMessage(final Message message) {
+        messageService.sendMessage(conversationId, message, mUsersInChat, new IFirebaseCallback() {
             @Override
             public void notifyUI(List data) {
                 if(mMessages.size() <= 1) {

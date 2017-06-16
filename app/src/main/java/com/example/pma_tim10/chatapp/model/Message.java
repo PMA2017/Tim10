@@ -19,6 +19,8 @@ public class Message {
     private Double latitude;
     private String sender;
     private String senderName;
+    private String fileName;
+    private String fileExtension;
 
     private HashMap<String, Object> timestampCreated;
 
@@ -96,6 +98,27 @@ public class Message {
 
     public void setSenderName(String senderName) {
         this.senderName = senderName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileExtension() {
+        return fileExtension;
+    }
+
+    public void setFileExtension(String fileExtension) {
+        this.fileExtension = fileExtension;
+    }
+
+    @Exclude
+    public boolean isFileAttached(){
+        return fileName == null ? false : true;
     }
 
     @Exclude
