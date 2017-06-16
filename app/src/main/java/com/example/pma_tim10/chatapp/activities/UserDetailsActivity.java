@@ -246,8 +246,11 @@ public class UserDetailsActivity extends AppCompatActivity implements View.OnCli
             ivUserPhoto.setImageBitmap(Utility.getCircleBitmap(bitmap));
         }
 
-        if(isCurrentUserProfile())
+        if(isCurrentUserProfile()) {
             ivUserPhoto.setOnClickListener(this);
+            ibtnAddFriend.setVisibility(View.GONE);
+            ibtnOpenChat.setVisibility(View.GONE);
+        }
     }
 
     private void goToMainActivity(){

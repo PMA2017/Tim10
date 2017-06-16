@@ -16,6 +16,7 @@ import java.util.TimeZone;
  */
 
 public class Message {
+    private String id;
     private String content;
     private Double longitude;
     private Double latitude;
@@ -57,6 +58,13 @@ public class Message {
         return timestampCreated;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     @Exclude
     public long getTimestampCreatedLong(){

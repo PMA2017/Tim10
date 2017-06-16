@@ -92,7 +92,10 @@ public class MessageService implements IMessageService {
         message.setSender(currentUser.getUid());
         message.setConversationId(conversationId);
 
-        Task<Void> task = databaseReference.child(Constants.MESSAGES).child(conversationId).push().setValue(message);
+        DatabaseReference temp = databaseReference.child(Constants.MESSAGES).child(conversationId).push();
+
+        message.setId(temp.getKey());
+        Task<Void> task = temp.setValue(message);
         task.addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

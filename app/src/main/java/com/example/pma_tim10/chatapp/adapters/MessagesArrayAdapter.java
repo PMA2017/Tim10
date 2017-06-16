@@ -93,6 +93,13 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
             });
         }
 
+        public void removeDownloadFileListener(){
+            txtMessageText.setOnClickListener(null);
+        }
+
+        public void removeMessageListenerLocation() {
+            txtMessageText.setOnLongClickListener(null);
+        }
     }
 
     @Override
@@ -124,6 +131,8 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
         // location
         if(message.isLocationSet())
             holder.addMessageListenerLocation(message.getLongitude(),message.getLatitude());
+        else
+            holder.removeMessageListenerLocation();
 
         // picture
         final User u = usersInChat.get(message.getSender());
@@ -138,6 +147,8 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
                     goToUserDetailsActivity(u.getUid());
                 }
             });
+        else
+            holder.ivSenderPhoto.setOnClickListener(null);
 
         // file upload
         if(message.isFileAttached()){
@@ -149,7 +160,10 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
                 holder.ivAttachedImage.setVisibility(View.VISIBLE);
             }
             holder.addDownloadFileListener(message.getFileName(),message.getContent());
-            holder.txtMessageText.setPaintFlags(holder.txtMessageText.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+            //holder.txtMessageText.setPaintFlags(holder.txtMessageText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        }else {
+            holder.ivAttachedImage.setVisibility(View.GONE);
+            holder.removeDownloadFileListener();
         }
 
     }
@@ -165,5 +179,11 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
         activity.startActivity(intent);
         activity.finish();
     }
+
+    @Override
+    public long getItemId(int position) {
+        return Long.parseLong(messages.get(position).getId());
+    }
+
 
 }
