@@ -5,8 +5,10 @@ import com.google.firebase.database.ServerValue;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.TimeZone;
 
 /**
@@ -21,6 +23,7 @@ public class Message {
     private String senderName;
     private String fileName;
     private String fileExtension;
+    private String conversationId;
 
     private HashMap<String, Object> timestampCreated;
 
@@ -116,6 +119,14 @@ public class Message {
         this.fileExtension = fileExtension;
     }
 
+    public String getConversationId() {
+        return conversationId;
+    }
+
+    public void setConversationId(String conversationId) {
+        this.conversationId = conversationId;
+    }
+
     @Exclude
     public boolean isFileAttached(){
         return fileName == null ? false : true;
@@ -126,4 +137,14 @@ public class Message {
         return longitude == null || latitude == null ? false : true;
     }
 
+    @Exclude
+    public boolean isFileImage() {
+        Collection<String> photoExtensions = new HashSet<String>(){{
+            add("BMP");
+            add("JPEG");
+            add("GIF");
+            add("PNG");
+        }};
+        return photoExtensions.contains(fileExtension.toUpperCase());
+    }
 }

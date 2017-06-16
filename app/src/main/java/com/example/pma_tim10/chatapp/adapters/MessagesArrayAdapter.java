@@ -11,13 +11,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.activities.MessagesActivity;
+import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.Message;
 import com.example.pma_tim10.chatapp.model.User;
+import com.example.pma_tim10.chatapp.utils.Constants;
 import com.example.pma_tim10.chatapp.utils.Utility;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 import java.util.Map;
@@ -44,6 +50,7 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
         this.usersInChat = usersInChat;
         this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
         this.activity = activity;
+        this.context = activity.getApplicationContext();
     }
 
 
@@ -51,12 +58,14 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
         public ImageView ivSenderPhoto;
         public TextView txtMessageText;
         public TextView txtMessageDateTime;
+        public ImageView ivAttachedImage;
 
         public MessageViewHolder(View view) {
             super(view);
             ivSenderPhoto = (ImageView) view.findViewById(R.id.sender_photo);
             txtMessageText = (TextView) view.findViewById(R.id.message_text);
             txtMessageDateTime = (TextView) view.findViewById(R.id.message_datetime);
+            ivAttachedImage = (ImageView) view.findViewById(R.id.attached_image);
         }
 
         public void addMessageListenerLocation(final double longitude, final double latitude){
@@ -65,6 +74,15 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
                 public boolean onLongClick(View view) {
                     ((MessagesActivity)activity).showMapDialog(latitude,longitude);
                     return false;
+                }
+            });
+        }
+
+        public void addDownloadFileListener(final String fileName){
+            txtMessageText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
                 }
             });
         }
@@ -96,12 +114,29 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
         Message message = messages.get(position);
         holder.txtMessageText.setText(message.getContent());
         holder.txtMessageDateTime.setText(message.getDateTimeFormatted());
+
+        // location
         if(message.isLocationSet())
             holder.addMessageListenerLocation(message.getLongitude(),message.getLatitude());
+
+        // picture
         User u = usersInChat.get(message.getSender());
         Bitmap bitmap = u != null ? u.getUserProfilePhoto() : null;
         if(u != null && bitmap != null)
             holder.ivSenderPhoto.setImageBitmap(Utility.getCircleBitmap(bitmap));
+
+        // file upload
+        if(message.isFileAttached()){
+            if(message.isFileImage()) {
+                Glide.with(context)
+                        .using(new FirebaseImageLoader())
+                        .load(FirebaseStorage.getInstance().getReference().child(Constants.CHAT_FILES).child(message.getConversationId()).child(message.getFileName()))
+                        .into(holder.ivAttachedImage);
+                holder.ivAttachedImage.setVisibility(View.VISIBLE);
+            }
+            holder.addDownloadFileListener(message.getFileName());
+        }
+
     }
 
     @Override

@@ -29,7 +29,11 @@ public class Constants {
 
     public static final String CONVERSATION_ID_PARAM = "conversationId";
     public static final String USERS_IN_CHAT = "usersInChat";
+
+    // paths
     public static final String USER_PROFILE_PHOTO_PATH = "profile_photos/";
+    public static final String CHAT_FILES = "chat_files";
+
 
     public static final String IE_CONVERSATION_ID_KEY = "conversationid";
     public static final String IE_CONVERSATION_NAME = "conversationname";
@@ -38,4 +42,5 @@ public class Constants {
     public static final String LOCATION_STATE = "locationstate";
 
     public static final String CONVERSATION_NEW_MESSAGES_SET = "convnewmsgset";
+
 }

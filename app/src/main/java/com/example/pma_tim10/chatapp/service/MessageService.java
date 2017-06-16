@@ -54,8 +54,6 @@ public class MessageService implements IMessageService {
     private FirebaseUser currentUser;
     private IConversationService conversationService;
 
-    private static final String CHAT_FILES = "chat_files";
-
     public MessageService() {
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
         this.storage = FirebaseStorage.getInstance();
@@ -90,6 +88,7 @@ public class MessageService implements IMessageService {
 
         message.setSenderName(currentUser.getDisplayName());
         message.setSender(currentUser.getUid());
+        message.setConversationId(conversationId);
 
         Task<Void> task = databaseReference.child(Constants.MESSAGES).child(conversationId).push().setValue(message);
         task.addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -125,7 +124,7 @@ public class MessageService implements IMessageService {
                            final IFirebaseCallback errorCallback) {
 
         String fileName = UUID.randomUUID().toString();
-        String path = CHAT_FILES + "/" + conversation.getId() + "/" + fileName;
+        String path = Constants.CHAT_FILES + "/" + conversation.getId() + "/" + fileName;
 
 //            StorageMetadata metadata = new StorageMetadata.Builder()
 //                    .setContentType("image/jpg")
