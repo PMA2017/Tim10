@@ -2,6 +2,7 @@ package com.example.pma_tim10.chatapp.service;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
@@ -23,6 +24,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
@@ -153,5 +155,35 @@ public class MessageService implements IMessageService {
                     errorCallback.notifyUI(null);
                 }
             });
+    }
+
+    @Override
+    public void downloadFile(final Conversation conversation, final String fileName,final String realName, final IFirebaseProgressCallback progressCallback, final IFirebaseFileUploadCallback successCallback, final IFirebaseCallback errorCallback) {
+        String path = Constants.CHAT_FILES + "/" + conversation.getId() + "/" + fileName;
+
+        File downloadsFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File localFile = new File(downloadsFilePath,realName);
+
+        storageReference.child(path).getFile(localFile)
+            .addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    progressCallback.changeProgressBarStatus(progress);
+                }
+            })
+            .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    successCallback.notify(null);
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    errorCallback.notifyUI(null);
+                }
+            });
+
     }
 }

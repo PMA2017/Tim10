@@ -25,4 +25,6 @@ public interface IMessageService {
     void sendMessage(final String conversationId, final Message message, final Map<String,User> usersInChat, final IFirebaseCallback callback);
 
     void uploadFile(final Conversation conversation, final Uri uri, final IFirebaseProgressCallback progressCallback, final IFirebaseFileUploadCallback successCallback, final IFirebaseCallback errorCallback);
+
+    void downloadFile(final Conversation conversation, final String fileName, final String realName, final IFirebaseProgressCallback progressCallback, final IFirebaseFileUploadCallback successCallback, final IFirebaseCallback errorCallback);
 }

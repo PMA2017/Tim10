@@ -3,6 +3,7 @@ package com.example.pma_tim10.chatapp.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.activities.MessagesActivity;
+import com.example.pma_tim10.chatapp.callback.IFirebaseFileUploadCallback;
 import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.Message;
 import com.example.pma_tim10.chatapp.model.User;
@@ -44,13 +46,15 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
     private Context context;
 
     Activity activity;
+    IFirebaseFileUploadCallback downloadCallback;
 
-    public MessagesArrayAdapter(List<Message> msgs, Map<String,User> usersInChat, Activity activity){
+    public MessagesArrayAdapter(List<Message> msgs, Map<String,User> usersInChat, Activity activity, IFirebaseFileUploadCallback downloadCallback){
         this.messages = msgs;
         this.usersInChat = usersInChat;
         this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
         this.activity = activity;
         this.context = activity.getApplicationContext();
+        this.downloadCallback = downloadCallback;
     }
 
 
@@ -78,11 +82,11 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
             });
         }
 
-        public void addDownloadFileListener(final String fileName){
+        public void addDownloadFileListener(final String... args){
             txtMessageText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    downloadCallback.notify(args);
                 }
             });
         }
@@ -134,7 +138,8 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
                         .into(holder.ivAttachedImage);
                 holder.ivAttachedImage.setVisibility(View.VISIBLE);
             }
-            holder.addDownloadFileListener(message.getFileName());
+            holder.addDownloadFileListener(message.getFileName(),message.getContent());
+            holder.txtMessageText.setPaintFlags(holder.txtMessageText.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
         }
 
     }

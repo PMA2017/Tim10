@@ -99,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
         userService = new UserService();
         userService.setOnline();
         userService.setFcmToken(new SharedPrefUtil(getApplicationContext()).getString(Constants.USER_FCM_TOKEN_FIELD));
+
+        setTitle("Chat TIM 10");
     }
 
 

@@ -139,7 +139,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
     private void initRecyclerViewComponents() {
         mMessages = new ArrayList<>();
         mUsersInChat = new HashMap<>();
-        messagesArrayAdapter = new MessagesArrayAdapter(mMessages, mUsersInChat, this);
+        messagesArrayAdapter = new MessagesArrayAdapter(mMessages, mUsersInChat, this, downloadCallback);
         recyclerView = (RecyclerView) findViewById(R.id.message_list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -271,6 +271,21 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    private IFirebaseFileUploadCallback downloadCallback = new IFirebaseFileUploadCallback() {
+        @Override
+        public void notify(String... args) {
+            String fileName = args[0];
+            String realName = args[1];
+            openDialog(true);
+            messageService.downloadFile(mConversation, fileName, realName, uploadProgressCallback, new IFirebaseFileUploadCallback() {
+                @Override
+                public void notify(String... args) {
+                    progressDialog.dismiss();
+                }
+            }, uploadErrorCallback);
+        }
+    };
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -278,7 +293,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
                 if (resultCode == RESULT_OK) {
                     // Get the Uri of the selected file
                     final Uri uri = data.getData();
-                    openDialog();
+                    openDialog(false);
                     messageService.uploadFile(mConversation, uri, uploadProgressCallback, new IFirebaseFileUploadCallback() {
                         @Override
                         public void notify(String... args) {
@@ -301,9 +316,9 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void openDialog(){
+    private void openDialog(boolean isDownloading){
         progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle("Uploading...");
+        progressDialog.setTitle(isDownloading ? "Downloading..." : "Uploading...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setMax(100);
         progressDialog.setCancelable(false);
@@ -321,7 +336,7 @@ public class MessagesActivity extends AppCompatActivity implements View.OnClickL
         @Override
         public void notifyUI(List data) {
             progressDialog.dismiss();
-            Toast.makeText(MessagesActivity.this,"File is not uploaded",Toast.LENGTH_SHORT).show();
+            Toast.makeText(MessagesActivity.this,"Error",Toast.LENGTH_SHORT).show();
         }
     };
 
