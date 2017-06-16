@@ -2,6 +2,7 @@ package com.example.pma_tim10.chatapp.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -18,11 +19,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
+import com.example.pma_tim10.chatapp.callback.IFirebaseProgressCallback;
 import com.example.pma_tim10.chatapp.fragments.FriendsTabFragment;
 import com.example.pma_tim10.chatapp.fragments.ConversationsTabFragment;
 import com.example.pma_tim10.chatapp.fragments.PeopleTabFragment;
@@ -43,6 +47,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -63,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     private String userChoosenTask;
+
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -230,7 +237,8 @@ public class MainActivity extends AppCompatActivity {
         if (data != null) {
             try {
                 bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
-                userService.uploadPhoto(bm);
+                openDialog();
+                userService.uploadPhoto(bm, uploadProgressCallback, uploadSuccessCallback, uploadErrorCallback);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -239,7 +247,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void onCaptureImageResult(Intent data) {
         Bitmap bm = (Bitmap) data.getExtras().get("data");
-        userService.uploadPhoto(bm);
+        openDialog();
+        userService.uploadPhoto(bm, uploadProgressCallback, uploadSuccessCallback, uploadErrorCallback);
 //        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 //        thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
 //        File destination = new File(Environment.getExternalStorageDirectory(),
@@ -255,8 +264,39 @@ public class MainActivity extends AppCompatActivity {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-
     }
+
+    private void openDialog(){
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Uploading photo...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setMax(100);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    private IFirebaseProgressCallback uploadProgressCallback = new IFirebaseProgressCallback() {
+        @Override
+        public void changeProgressBarStatus(double value) {
+            progressDialog.setProgress((int) value);
+        }
+    };
+
+    private IFirebaseCallback uploadSuccessCallback = new IFirebaseCallback() {
+        @Override
+        public void notifyUI(List data) {
+            progressDialog.dismiss();
+            Toast.makeText(MainActivity.this,"Photo uploaded",Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    private IFirebaseCallback uploadErrorCallback = new IFirebaseCallback() {
+        @Override
+        public void notifyUI(List data) {
+            progressDialog.dismiss();
+            Toast.makeText(MainActivity.this,"Photo is not uploaded",Toast.LENGTH_SHORT).show();
+        }
+    };
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

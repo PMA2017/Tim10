@@ -3,6 +3,7 @@ package com.example.pma_tim10.chatapp.service;
 import android.graphics.Bitmap;
 
 import com.example.pma_tim10.chatapp.callback.IFirebaseCallback;
+import com.example.pma_tim10.chatapp.callback.IFirebaseProgressCallback;
 import com.example.pma_tim10.chatapp.model.User;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -22,7 +23,7 @@ public interface IUserService {
     void setOnline();
     void setOffline();
 
-    void uploadPhoto(Bitmap bitmap);
+    void uploadPhoto(Bitmap bitmap, final IFirebaseProgressCallback progressCallback, final IFirebaseCallback successCallback, final IFirebaseCallback errorCallback);
 
 
     void checkUserByUid(String uid, User user, IFirebaseCallback callback);
