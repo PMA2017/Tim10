@@ -2,6 +2,7 @@ package com.example.pma_tim10.chatapp.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.pma_tim10.chatapp.R;
 import com.example.pma_tim10.chatapp.activities.MessagesActivity;
+import com.example.pma_tim10.chatapp.activities.UserDetailsActivity;
 import com.example.pma_tim10.chatapp.callback.IFirebaseFileUploadCallback;
 import com.example.pma_tim10.chatapp.model.Conversation;
 import com.example.pma_tim10.chatapp.model.Message;
@@ -124,10 +126,18 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
             holder.addMessageListenerLocation(message.getLongitude(),message.getLatitude());
 
         // picture
-        User u = usersInChat.get(message.getSender());
+        final User u = usersInChat.get(message.getSender());
         Bitmap bitmap = u != null ? u.getUserProfilePhoto() : null;
         if(u != null && bitmap != null)
             holder.ivSenderPhoto.setImageBitmap(Utility.getCircleBitmap(bitmap));
+
+        if(u != null)
+            holder.ivSenderPhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    goToUserDetailsActivity(u.getUid());
+                }
+            });
 
         // file upload
         if(message.isFileAttached()){
@@ -147,6 +157,13 @@ public class MessagesArrayAdapter extends RecyclerView.Adapter<MessagesArrayAdap
     @Override
     public int getItemCount() {
         return messages.size();
+    }
+
+    private void goToUserDetailsActivity(String uid){
+        Intent intent = new Intent(activity,UserDetailsActivity.class);
+        intent.putExtra(Constants.IE_USER_ID_KEY, uid);
+        activity.startActivity(intent);
+        activity.finish();
     }
 
 }

@@ -30,4 +30,6 @@ public interface IUserService {
 
     void setFcmToken(final String token);
 
+    void updateUserProfile(final String fullName, final String bio, final IFirebaseCallback callback);
+
 }

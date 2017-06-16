@@ -18,6 +18,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -280,6 +281,19 @@ public class UserService implements IUserService {
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .child(Constants.USER_FCM_TOKEN_FIELD)
                 .setValue(token);
+    }
+
+    @Override
+    public void updateUserProfile(final String fullName, final String bio, final IFirebaseCallback callback) {
+        Map updateUser = new HashMap();
+        updateUser.put("fullName",fullName);
+        updateUser.put("aboutMe",bio);
+        databaseReference.child(Constants.USERS).child(currentUser.getUid()).updateChildren(updateUser, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                callback.notifyUI(null);
+            }
+        });
     }
 
 }

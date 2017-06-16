@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.pma_tim10.chatapp.activities.UserDetailsActivity">
+
+    <item
+        android:id="@+id/action_update_user"
+        android:orderInCategory="1"
+        android:title="@string/action_save"
+        app:showAsAction="always"
+        android:visible="false"/>
+
+</menu>
